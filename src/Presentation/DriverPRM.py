@@ -18,9 +18,10 @@ class DriverPRM(object):
 
         while not input_correct and count < 10:
             epic = input('Please enter an EPIC code of a share: ')
+            epic = epic.upper().replace(" ", "")
             try:
                 if (4 >= len(epic) >= 2) and str(epic).isalpha():
-                    self.temp_portfolio.append(epic.upper())
+                    self.temp_portfolio.append(epic)
                     count += 1
                     if count == 10:
                         print("You have reached the maximum num of share in a portfolio 10 ")
