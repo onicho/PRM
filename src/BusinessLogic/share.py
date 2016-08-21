@@ -17,4 +17,10 @@ class Share:
         return self.__historical_prices
 
 
-
+# s1 = Share("LLOY")
+# hist_pr = {'2009-01-01': 30, '2010-01-01': 35, '2011-01-01': 40}
+# s1.set_historical_prices(hist_pr)
+#
+# print(s1.getName(),
+#       s1.get_historical_prices()
+#       )
