@@ -46,3 +46,5 @@ class DriverPRM(object):
 test = DriverPRM()
 test.get_epic_codes_from_user()
 print(test.get_temp_portfolio())
+print(type(test.get_temp_portfolio()))
+
