@@ -7,7 +7,8 @@ class DriverPRM(object):
     """
 
     def __init__(self):
-        self.temp_portfolio = []
+        self.share_epics = []
+        self.calendar_period = []
 
     def get_epic_codes_from_user(
             self):  # let's start with return calculators, so they can enter anything between 1-10 EPICs
@@ -21,7 +22,7 @@ class DriverPRM(object):
             epic = epic.upper().replace(" ", "")
             try:
                 if (4 >= len(epic) >= 2) and str(epic).isalpha():
-                    self.temp_portfolio.append(epic)
+                    self.share_epics.append(epic)
                     count += 1
                     if count == 10:
                         print("You have reached the maximum num of share in a portfolio 10 ")
@@ -39,12 +40,27 @@ class DriverPRM(object):
                 print("Invalid entry. You have to enter numbers 0-9. Please try again.")
                 print()
 
-    def get_temp_portfolio(self):
-        return self.temp_portfolio
+    def get_period_from_user(self):
+        print()
+        print("please enter the assessment period in the following format yyyy-mm-dd......")  # RE-WORD
+        print()
+        start_date = input("FROM:  ")  # DO ERROR CATCHING
+        end_date = input("TO:  ")  # DO ERROR CATCHING
+
+        self.calendar_period.append(start_date)  # ????
+        self.calendar_period.append(end_date)
+
+    def get_calendar_period(self):
+        return self.calendar_period
+
+    def get_share_epics(self):
+        return self.share_epics
 
 
 test = DriverPRM()
-test.get_epic_codes_from_user()
-print(test.get_temp_portfolio())
-print(type(test.get_temp_portfolio()))
+# test.get_epic_codes_from_user()
+# print(test.get_share_epics())
+# print(type(test.get_share_epics()))
 
+test.get_period_from_user()
+print(test.get_calendar_period())

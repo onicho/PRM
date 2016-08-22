@@ -7,6 +7,12 @@ class Share:
         self.__name = str(name)
         self.__historical_prices = {}
 
+    def __repr__(self):
+        return self.__name
+
+    def __str__(self):
+        return self.__name
+
     def getName(self):
         return self.__name
 
@@ -24,3 +30,6 @@ class Share:
 # print(s1.getName(),
 #       s1.get_historical_prices()
 #       )
+#
+# print(s1)
+# print(type(s1))
