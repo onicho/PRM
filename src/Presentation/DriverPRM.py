@@ -14,11 +14,13 @@ class DriverPRM(object):
             self):  # let's start with return calculators, so they can enter anything between 1-10 EPICs
         print()
         print("if you want to calculate return for a share ......")
+        print()
         input_correct = False
         count = 0
+        sentinel_value = "-1"
 
         while not input_correct and count < 10:
-            epic = input('Please enter an EPIC code of a share: ')
+            epic = input('Please enter an EPIC code of a share( -1 to finish): ')
             epic = epic.upper().replace(" ", "")
             try:
                 if (4 >= len(epic) >= 2) and str(epic).isalpha():
@@ -27,9 +29,12 @@ class DriverPRM(object):
                     if count == 10:
                         print("You have reached the maximum num of share in a portfolio 10 ")
                         break
-                    addepic = input("If you don;t want to add any more shares type STOP, else carry on:  ")
-                    if addepic == 'stop':
-                        break
+                elif epic == sentinel_value:
+                    break
+
+                    # addepic = input("If you don;t want to add any more shares type STOP, else carry on:  ")
+                    # if addepic == 'stop':
+                    #     break
                 else:
                     print()
                     print("An EPIC code is an abbreviation 2-4 characters long.  Please  try again.")
@@ -57,10 +62,10 @@ class DriverPRM(object):
         return self.share_epics
 
 
-test = DriverPRM()
+# test = DriverPRM()
 # test.get_epic_codes_from_user()
 # print(test.get_share_epics())
 # print(type(test.get_share_epics()))
-
-test.get_period_from_user()
-print(test.get_calendar_period())
+#
+# test.get_period_from_user()
+# print(test.get_calendar_period())

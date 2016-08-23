@@ -10,6 +10,12 @@ class Calculator(object):
         return result
 
 
+    # @staticmethod
+    # def return_on_share_prices(list_of_prices):
+
+
+
+
 
 
 calc = Calculator()
