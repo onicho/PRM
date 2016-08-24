@@ -1,8 +1,8 @@
 from BusinessLogic.share import Share
 
 
-def create_share(share_name):
-    return Share(share_name)
+def create_share(str_share_name):
+    return Share(str_share_name)
 
 
 def shares_maker(list_of_epic_strings):
@@ -14,8 +14,12 @@ def shares_maker(list_of_epic_strings):
 
 #test
 
-print(shares_maker(["BP", "SHELL"]))
-for myobject in shares_maker(["BP", "SHELL"]):
-    print(type(object), "\n")
+mylst = shares_maker(["BP", "SHELL"])
+
+print(mylst)
+
+print(mylst[0].get_historical_prices())
+
+
 
 
