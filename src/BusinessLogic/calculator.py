@@ -32,7 +32,19 @@ class Calculator(object):
         annualised_num = num * 12 * 100
         return annualised_num
 
-    #@staticmethod
-    #def correlation_coefficent(list_of_shares):
+    @staticmethod
+    def correlation_coefficent(list_of_shares):
+        lists_of_prices_to_correlate = []
+
+        if len(list_of_shares) > 1:
+
+            for share in list_of_shares:
+                lists_of_prices_to_correlate.append(share.get_historical_prices())
+            correlations = corrcoef(lists_of_prices_to_correlate)
+            return correlations
+
+        else:
+            print("Insufficient number of shares to perform correlation " +
+                  " (minimum 2 required, but %(num)d were provided)" % {"num": len(list_of_shares)})
 
 
