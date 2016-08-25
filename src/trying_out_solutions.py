@@ -7,7 +7,7 @@ def beta(lst_returns_on_share, lst_returns_on_market):
     covariance = cov(lst_returns_on_share, lst_returns_on_market, ddof=0)[0][1]
     variance = var(lst_returns_on_market)
     beta_result = float(covariance / variance)
-    return beta_result
+    return round(beta_result, 2)
 
 """
 In standard statistical practice, ``ddof=1`` provides an
@@ -46,4 +46,4 @@ values1 = [float(i) for i in array1]
 values2 = [float(i) for i in array2]
 MKTvalues = [float(i) for i in arrayMKT]
 
-print(beta(values3, MKTvalues))
+print(beta(MKTvalues, MKTvalues))

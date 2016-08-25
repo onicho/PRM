@@ -56,4 +56,10 @@ class Calculator(object):
         beta_result = float(covariance / variance)
         return beta_result
 
+    # @staticmethod
+    # def alpha(lst_returns_on_share, lst_returns_on_market, risk_free_rate):
+    #     #Alpha %  --> α = Rp – [Rf + (Rm – Rf) β]
+    #
+
+
 
