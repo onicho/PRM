@@ -1,34 +1,49 @@
-from numpy import corrcoef
-from BusinessLogic.share import Share
-
-def find_correlation(list_of_shares):
-    lists_of_prices_to_correlate = []
-
-    if len(list_of_shares) > 1:
-        for share in list_of_shares:
-            lists_of_prices_to_correlate.append(share.get_historical_prices())
-        correlations = corrcoef(lists_of_prices_to_correlate)
-        return correlations
-    else:
-        print("Insufficient number of shares to perform correlation " +
-              " (minimum 2 required, but %(num)d were provided)" % {"num": len(list_of_shares)})
+from numpy import *
 
 
+def beta(lst_returns_on_share, lst_returns_on_market):
+    # cov(x,y)/ var(y)
+    #ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
+    covariance = cov(lst_returns_on_share, lst_returns_on_market, ddof=0)[0][1]
+    variance = var(lst_returns_on_market)
+    beta_result = float(covariance / variance)
+    return beta_result
+
+"""
+In standard statistical practice, ``ddof=1`` provides an
+unbiased estimator of the variance of a hypothetical infinite population.
+``ddof=0`` provides a maximum likelihood estimate of the variance for
+normally distributed variables.
+"""
 
 
-s1 = Share('BP')
-s2 = Share('RBS')
-s3 = Share('LLOY')
 
-s1.set_historical_prices([30,35,41])
-s2.set_historical_prices([25,11,50])
-s3.set_historical_prices([10,16,20])
+#tests
 
+array1 = []
 
-#print(s3.getName(), s3.get_historical_prices())
+with open("values1.txt", "r") as ins:
+    for line in ins:
+        array1.append(line.rstrip('\n').rstrip('\r'))
+array2 = []
 
-mylst = [s1, s2, s3]
+with open("values2.txt", "r") as ins:
+    for line in ins:
+        array2.append(line.rstrip('\n').rstrip('\r'))
+array3 = []
 
-other_list = [s1]
+with open("values3.txt", "r") as ins:
+    for line in ins:
+        array3.append(line.rstrip('\n').rstrip('\r'))
+arrayMKT = []
 
-print(find_correlation(mylst))
+with open("MKTvalues.txt", "r") as ins:
+    for line in ins:
+        arrayMKT.append(line.rstrip('\n').rstrip('\r'))
+
+values3 = [float(i) for i in array3]
+values1 = [float(i) for i in array1]
+values2 = [float(i) for i in array2]
+MKTvalues = [float(i) for i in arrayMKT]
+
+print(beta(values3, MKTvalues))

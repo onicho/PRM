@@ -23,7 +23,7 @@ class Calculator(object):
 
     @staticmethod
     def standard_deviation(list_of_num):
-        #NB: stdev  == excel stdev.p!!! numpy gives you stdev.s!!
+        # NB: stdev  == excel stdev.p!!! numpy gives you stdev.s!!
         sd_result = statistics.stdev(list_of_num)
         return sd_result
 
@@ -46,5 +46,14 @@ class Calculator(object):
         else:
             print("Insufficient number of shares to perform correlation " +
                   " (minimum 2 required, but %(num)d were provided)" % {"num": len(list_of_shares)})
+
+    @staticmethod
+    def beta(lst_returns_on_share, lst_returns_on_market):
+        # cov(x,y)/ var(y)
+        # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
+        covariance = cov(lst_returns_on_share, lst_returns_on_market, ddof=0)[0][1]
+        variance = var(lst_returns_on_market)
+        beta_result = float(covariance / variance)
+        return beta_result
 
 
