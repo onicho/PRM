@@ -5,17 +5,15 @@ from  scipy.stats import beta
 calc = Calculator()
 
 
-def testbeta(lst_share_prices, lst_market_prices):
-    # cov(x,y)/ var(y)
-    # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
+def erb(lst_share_prices, lst_market_prices, rf):
+    #ERB --> Treynor ratio = (Rs – Rf) ÷ β
 
-    returns_share = [float(round(item, 9)) for item in calc.return_on_share_prices(lst_share_prices)]
-    returns_market = [float(round(item, 9)) for item in calc.return_on_share_prices(lst_market_prices)]
+    rs = calc.annualise_as_percentage(calc.average_return([float(round(item, 9)) for item in calc.return_on_share_prices(lst_share_prices)]))
 
-    beta_result = float((cov(returns_share, returns_market, ddof=0)[0][1]) /
-                        (var(returns_market)))
+    erb_result = float((rs - rf) / calc.beta(lst_share_prices, lst_market_prices))
 
-    return round(beta_result, 2)
+    return round(erb_result, 2)
+
 
 
 
@@ -40,7 +38,7 @@ MKTprices = [float(i) for i in arrayMKT]
 
 ###########################################
 
-test = testbeta(AMLprices, MKTprices)
+test = erb(AMLprices, MKTprices, 1.5)
 
 print(test)
 

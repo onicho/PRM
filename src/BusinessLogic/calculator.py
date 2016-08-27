@@ -7,6 +7,10 @@ class Calculator(object):
     def __init__(self):
         self.name = "Share evaluation calculator"
 
+    def __repr__(self):
+        self.repr_name = "Calculator"
+
+
     @staticmethod
     def average_return(list_of_nums):
         ar_result = float(sum(list_of_nums) / len(list_of_nums))
@@ -61,7 +65,7 @@ class Calculator(object):
         beta_result = float((cov(returns_share, returns_market, ddof=0)[0][1]) /
                             (var(returns_market)))
 
-        return round(beta_result, 2)
+        return beta_result#round(beta_result, 2)
 
     def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
         # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
@@ -77,6 +81,19 @@ class Calculator(object):
         alpha_s = rs - (rf + (rm - rf) * beta_s)
 
         return round(alpha_s, 2)
+
+    def erb(self, lst_share_prices, lst_market_prices, rf):
+        # ERB --> Treynor ratio = (Rs – Rf) ÷ β
+
+        rs = self.annualise_as_percentage(
+            self.average_return([float(round(item, 9)) for item in self.return_on_share_prices(lst_share_prices)]))
+
+        erb_result = float((rs - rf) / self.beta(lst_share_prices, lst_market_prices))
+
+        return round(erb_result, 2)
+
+    def total_risk(self):
+
 
 
 
