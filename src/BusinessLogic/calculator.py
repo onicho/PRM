@@ -3,6 +3,10 @@ import statistics
 
 
 class Calculator(object):
+
+    def __init__(self):
+        self.name = "Share evaluation calculator"
+
     @staticmethod
     def average_return(list_of_nums):
         ar_result = float(sum(list_of_nums) / len(list_of_nums))
@@ -47,19 +51,32 @@ class Calculator(object):
             print("Insufficient number of shares to perform correlation " +
                   " (minimum 2 required, but %(num)d were provided)" % {"num": len(list_of_shares)})
 
-    @staticmethod
-    def beta(lst_returns_on_share, lst_returns_on_market):
+    def beta(self, lst_share_prices, lst_market_prices):
         # cov(x,y)/ var(y)
         # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
-        covariance = cov(lst_returns_on_share, lst_returns_on_market, ddof=0)[0][1]
-        variance = var(lst_returns_on_market)
-        beta_result = float(covariance / variance)
-        return beta_result
 
-    # @staticmethod
-    # def alpha(lst_returns_on_share, lst_returns_on_market, risk_free_rate):
-    #     #Alpha %  --> α = Rp – [Rf + (Rm – Rf) β]
-    #
+        returns_share = [float(round(item, 9)) for item in self.return_on_share_prices(lst_share_prices)]
+        returns_market = [float(round(item, 9)) for item in self.return_on_share_prices(lst_market_prices)]
+
+        beta_result = float((cov(returns_share, returns_market, ddof=0)[0][1]) /
+                            (var(returns_market)))
+
+        return round(beta_result, 2)
+
+    def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
+        # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
+
+        returns_share = [float(round(item, 9)) for item in self.return_on_share_prices(lst_hist_prices_share)]
+        rs = self.annualise_as_percentage(self.average_return(returns_share))
+
+        returns_market = [float(round(item, 9)) for item in self.return_on_share_prices(lst_hist_prices_market)]
+        rm = self.annualise_as_percentage(self.average_return(returns_market))
+
+        beta_s = self.beta(returns_share, returns_market)
+
+        alpha_s = rs - (rf + (rm - rf) * beta_s)
+
+        return round(alpha_s, 2)
 
 
 

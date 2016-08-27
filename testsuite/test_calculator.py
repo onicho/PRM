@@ -166,6 +166,41 @@ other_list = [s1]
 
 print(find_correlation(mylst))
 
+"""
 
+#BETA
+
+"""
+def beta(lst_returns_on_share, lst_returns_on_market):
+    # cov(x,y)/ var(y)
+    #ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
+    covariance = cov(lst_returns_on_share, lst_returns_on_market, ddof=0)[0][1]
+    variance = var(lst_returns_on_market)
+    beta_result = float(covariance / variance)
+    return round(beta_result, 2)
+
+
+In standard statistical practice, ``ddof=1`` provides an
+unbiased estimator of the variance of a hypothetical infinite population.
+``ddof=0`` provides a maximum likelihood estimate of the variance for
+normally distributed variables.
+"""
+
+#ALPHA
+
+"""
+def alpha(lst_hist_prices_share, lst_hist_prices_market, rf):
+    # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
+    returns_share = [float(round(item, 9)) for item in calc.return_on_share_prices(lst_hist_prices_share)]
+    rs = calc.annualise_as_percentage(calc.average_return(returns_share))
+
+    returns_market = [float(round(item, 9)) for item in calc.return_on_share_prices(lst_hist_prices_market)]
+    rm = calc.annualise_as_percentage(calc.average_return(returns_market))
+
+    beta_s = calc.beta(returns_share, returns_market)
+
+    alpha_s = rs - (rf + (rm - rf) * beta_s)
+
+    return round(alpha_s, 2)
 
 """
