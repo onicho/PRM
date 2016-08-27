@@ -12,28 +12,29 @@ class Calculator(object):
 
 
     @staticmethod
-    def average_return(list_of_nums):
-        ar_result = float(sum(list_of_nums) / len(list_of_nums))
+    def average_return(list_of_prices):
+        ar_result = float(sum(list_of_prices) / len(list_of_prices))
         return ar_result
 
     @staticmethod
-    def return_on_share_prices(list_of_prices):
+    def return_on_share_prices(list_of_hist_prices):
         rs_result = []
         position = 0
 
-        while position < len(list_of_prices) - 1:
+        while position < len(list_of_hist_prices) - 1:
             r = float(
-                (list_of_prices[position + 1] / list_of_prices[position]) - 1)  # format(..., '.5f')  # !!!!! check
+                (list_of_hist_prices[position + 1] / list_of_hist_prices[position]) - 1)     # format(..., '.5f')  # !!!!! check
             rs_result.append(r)
             position += 1
 
         return rs_result
 
-    @staticmethod
-    def standard_deviation(list_of_num):
+    def standard_deviation(self, list_of_hist_prices):
         # NB: stdev  == excel stdev.p!!! numpy gives you stdev.s!!
-        sd_result = statistics.stdev(list_of_num)
-        return sd_result
+
+        sd = statistics.stdev([float(round(item, 9)) for item in self.return_on_share_prices(list_of_hist_prices)])
+
+        return float(self.annualise_as_percentage(sd))
 
     @staticmethod
     def annualise_as_percentage(num):
@@ -65,7 +66,7 @@ class Calculator(object):
         beta_result = float((cov(returns_share, returns_market, ddof=0)[0][1]) /
                             (var(returns_market)))
 
-        return beta_result#round(beta_result, 2)
+        return beta_result #round(beta_result, 2)
 
     def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
         # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
@@ -76,7 +77,7 @@ class Calculator(object):
         returns_market = [float(round(item, 9)) for item in self.return_on_share_prices(lst_hist_prices_market)]
         rm = self.annualise_as_percentage(self.average_return(returns_market))
 
-        beta_s = self.beta(returns_share, returns_market)
+        beta_s = self.beta(lst_hist_prices_share, lst_hist_prices_market)
 
         alpha_s = rs - (rf + (rm - rf) * beta_s)
 
@@ -92,7 +93,20 @@ class Calculator(object):
 
         return round(erb_result, 2)
 
-    def total_risk(self):
+    def total_risk(self, lst_hist_prices):
+        tr = pow(self.standard_deviation(lst_hist_prices), 2)
+        return tr
+
+    def specific_risk(self,share_histprices, market_histprices):
+
+        sr = self.total_risk(share_histprices) - (pow(self.beta(share_histprices, market_histprices), 2) *
+                                                  self.total_risk(market_histprices))
+
+        return sr
+
+
+
+
 
 
 

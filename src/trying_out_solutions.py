@@ -1,32 +1,20 @@
 from numpy import *
 from BusinessLogic.calculator import *
-from  scipy.stats import beta
+import math
+
 
 calc = Calculator()
-
-
-def erb(lst_share_prices, lst_market_prices, rf):
-    #ERB --> Treynor ratio = (Rs – Rf) ÷ β
-
-    rs = calc.annualise_as_percentage(calc.average_return([float(round(item, 9)) for item in calc.return_on_share_prices(lst_share_prices)]))
-
-    erb_result = float((rs - rf) / calc.beta(lst_share_prices, lst_market_prices))
-
-    return round(erb_result, 2)
-
-
-
 
 
 
 ##########################################
 array1 = []
 
-with open("AMLprices.txt", "r") as ins:
+with open("ERMprices.txt", "r") as ins:
     for line in ins:
         array1.append(line.rstrip('\n').rstrip('\r'))
 
-AMLprices = [float(i) for i in array1]
+ERMprices = [float(i) for i in array1]
 
 arrayMKT = []
 
@@ -38,9 +26,17 @@ MKTprices = [float(i) for i in arrayMKT]
 
 ###########################################
 
-test = erb(AMLprices, MKTprices, 1.5)
+
+test = calc.alpha(ERMprices, MKTprices, 1.5)
 
 print(test)
+
+
+
+
+
+
+
 
 """
 
