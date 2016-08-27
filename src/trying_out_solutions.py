@@ -32,9 +32,9 @@ test = calc.alpha(ERMprices, MKTprices, 1.5)
 print(test)
 
 
+test1 = calc.erb(ERMprices, MKTprices, 1.5)
 
-
-
+print(test1)
 
 
 
