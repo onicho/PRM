@@ -17,6 +17,14 @@ def shares_betas(lst_shares,mkt_prices):
     betas_lst = [c.beta(i, mkt_prices) for i in lst_shares]
     return betas_lst
 
+def mkt_return(mkt_prices):
+    retmkt = c.annualise_as_percentage(c.average_return(c.return_on_share_prices(mkt_prices)))
+    return retmkt
+
+
+def mkt_risk(mkt_prices):
+    riskmkt = c.total_risk(mkt_prices)
+    return riskmkt
 
 def non_zero_alpha(alphas_lst):
 
@@ -52,8 +60,47 @@ def adj_weight_percent(adjusted_weights):
     return weights_percent
 
 
+def portfolio_alpha(adjusted_weights, alphas):
+    if len(adjusted_weights) == len(alphas):
 
-#def portfolio_alpha(adjusted_weights, alphas):
+        position = 0
+        a = []
+        while position < len(alphas):
+            a.append(adjusted_weights[position] * alphas[position])
+            position += 1
+
+        return round(sum(a), 2)
+
+
+def portfolio_beta(adjusted_weights, betas):
+    if len(adjusted_weights) == len(betas):
+
+        position = 0
+        b = []
+        while position < len(betas):
+            b.append(adjusted_weights[position] * betas[position])
+            position += 1
+
+        return round(sum(b), 2)
+
+
+def portfolio_specific_risk(adjusted_weights, shares_spec_risk):
+    if len(adjusted_weights) == len(shares_spec_risk):
+
+        position = 0
+        sr = []
+        while position < len(shares_spec_risk):
+            sr.append(round(pow(adjusted_weights[position],2),4) * round(shares_spec_risk[position],2))
+            position += 1
+
+        return round(sum(sr), 2)
+
+
+#def active_portf_tb(port_alpha,port_sp,return_mkt,rf, totrisk_mkt):
+
+
+
+
 
 
 
@@ -134,3 +181,22 @@ test6 = adj_weight_percent(test5)
 print(test6)
 print()
 
+test7 = portfolio_alpha(test5, test)
+print(test7)
+print()
+
+test8 = portfolio_beta(test5, test2)
+print(test8)
+print()
+
+test9 = portfolio_specific_risk(test5, test1)
+print(test9)
+print()
+
+test10 = mkt_return(MKTprices)
+print(test10)
+print()
+
+test11 = mkt_risk(MKTprices)
+print(test11)
+print()
