@@ -45,11 +45,23 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
                 float(pow(c.beta(lst_shares[count], mkt_prices),2)) / \
                 float(c.specific_risk(lst_shares[count], mkt_prices))
             )
-
             count += 1
 
+    co_rates = []
 
-    return num_components, denom_components
+    for share in lst_shares:
+
+        n = len(lst_shares) - (lst_shares.index(share) + 1)
+
+        num_element = num_components[:-n or None]  # to remove the last N elements of a list.
+
+        co_rates.append(num_element)
+
+
+
+
+
+    return num_components, denom_components, co_rates
 
 
 
@@ -113,10 +125,10 @@ testlist = order_by_erb([NGprices, AMLprices, CGLprices, ERMprices], 1.5, MKTpri
 
 test = cut_off_rate(testlist, 1.5, MKTprices)
 
-# for i in test:
-#     print(i)
+for i in test:
+    print(i)
 
-print(test)
+#print(test)
 
 
 #############################################
