@@ -4,24 +4,24 @@ class Share:
     ## Constructs a share
     #
     def __init__(self, name):
-        self.__name = str(name)
-        self.__historical_prices = []
+        self.name = str(name)
+        self.historical_prices = []
         self.hist_price_period = {'START_DATE': 0, 'END_DATE': 0, 'PRICE_FREQUENCY': ''}
 
     def __repr__(self):
-        return self.__name
+        return self.name
 
     def __str__(self):
-        return self.__name
+        return self.name
 
     def getName(self):
-        return self.__name
+        return self.name
 
     def set_historical_prices(self, historical_prices):
-        self.__historical_prices = historical_prices
+        self.historical_prices = historical_prices
 
     def get_historical_prices(self):
-        return self.__historical_prices
+        return self.historical_prices
 
     def update_hist_price_period(self, start_date_str, end_date_str, frequency_str = 'monthly'):
         self.hist_price_period['START_DATE'] = start_date_str

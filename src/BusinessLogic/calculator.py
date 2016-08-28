@@ -10,6 +10,9 @@ class Calculator(object):
     def __repr__(self):
         self.repr_name = "Calculator"
 
+    def __str__(self):
+        self.str_name = "Calculator"
+
 
     @staticmethod
     def average_return(list_of_prices):
@@ -99,8 +102,8 @@ class Calculator(object):
 
     def specific_risk(self,share_histprices, market_histprices):
 
-        sr = self.total_risk(share_histprices) - (pow(self.beta(share_histprices, market_histprices), 2) *
-                                                  self.total_risk(market_histprices))
+        sr = float(self.total_risk(share_histprices) - (pow(self.beta(share_histprices, market_histprices), 2) *
+                                                  self.total_risk(market_histprices)))
 
         return sr
 

@@ -1,9 +1,34 @@
-from numpy import *
 from BusinessLogic.calculator import *
-import math
+from collections import *
+
+c = Calculator()
 
 
-calc = Calculator()
+
+
+
+def cut_off_rate(lst2d_shareprices, rf, mkt_prices):
+
+    erbs = {}
+
+    for i in lst2d_shareprices:
+        erbs[c.erb(i,mkt_prices, rf)] = i
+
+    ordered_erbs = sorted(erbs.items(), reverse = True)
+
+
+    numer_components = []
+
+    for item in lst2d_shareprices:
+        numer_components.append(
+            float((c.annualise_as_percentage(c.average_return(c.return_on_share_prices(item)))) - rf) * \
+            float(c.beta(item, mkt_prices)) / \
+            float(c.specific_risk(item, mkt_prices))
+        )
+
+    return ordered_erbs
+
+
 
 
 
@@ -24,19 +49,43 @@ with open("MKTprices.txt", "r") as ins:
 
 MKTprices = [float(i) for i in arrayMKT]
 
+array2 = []
+
+with open("CGLprices.txt", "r") as ins:
+    for line in ins:
+        array2.append(line.rstrip('\n').rstrip('\r'))
+
+CGLprices = [float(i) for i in array2]
+
+
+array3 = []
+
+with open("AMLprices.txt", "r") as ins:
+    for line in ins:
+        array3.append(line.rstrip('\n').rstrip('\r'))
+
+AMLprices = [float(i) for i in array3]
+
+
+
+array4 = []
+
+with open("NGprices.txt", "r") as ins:
+    for line in ins:
+        array4.append(line.rstrip('\n').rstrip('\r'))
+
+NGprices = [float(i) for i in array4]
+
+
 ###########################################
 
+test = cut_off_rate([CGLprices, AMLprices, NGprices,ERMprices], 1.5, MKTprices)
 
-test = calc.alpha(ERMprices, MKTprices, 1.5)
-
-print(test)
-
-
-test1 = calc.erb(ERMprices, MKTprices, 1.5)
-
-print(test1)
+for i in test:
+    print(i)
 
 
+#print(test)
 
 """
 
@@ -69,5 +118,23 @@ values2 = [float(i) for i in array2]
 MKTvalues = [float(i) for i in arrayMKT]
 
 print(beta(MKTvalues, MKTvalues))
+
+
+#########################
+
+ erbs = []
+
+ for i in lst2d_shareprices:
+     erbs.append(c.erb(i,mkt_prices, rf))
+
+ erbs.sort(reverse=True)
+
+ sorted_erb_shares = []
+
+ for i in lst2d_shareprices:
+
+     position = 0
+     matched = False
+
 
 """
