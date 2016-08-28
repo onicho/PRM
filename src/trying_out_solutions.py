@@ -114,6 +114,13 @@ def normalised_weights(unadj_weights):
     return norm_weights
 
 
+def norm_weight_percent(norm_weights):
+
+    weights_percent = [round((i * 100), 2) for i in norm_weights]
+
+    return weights_percent
+
+
 
 
 
@@ -183,6 +190,13 @@ print(test3)
 test4 = normalised_weights(test3)
 
 print(test4)
+
+
+test5 = norm_weight_percent(test4)
+
+for i in test5:
+    print(str(i) + '%')
+
 
 
 #############################################
