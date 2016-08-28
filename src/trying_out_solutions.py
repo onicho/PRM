@@ -96,7 +96,12 @@ def portfolio_specific_risk(adjusted_weights, shares_spec_risk):
         return round(sum(sr), 2)
 
 
-#def active_portf_tb(port_alpha,port_sp,return_mkt,rf, totrisk_mkt):
+def active_portf_tb(port_alpha,port_sp,return_mkt,rf, totrisk_mkt):
+
+    w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(rf)) / float(totrisk_mkt))
+
+    return round(w, 2)
+
 
 
 
@@ -200,3 +205,6 @@ print()
 test11 = mkt_risk(MKTprices)
 print(test11)
 print()
+
+test12 = active_portf_tb(test7,test9,test10,1.5,test11)
+print(test12)
