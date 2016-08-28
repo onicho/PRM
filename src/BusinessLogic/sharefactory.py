@@ -13,12 +13,12 @@ class ShareGenerator:
             list_of_shares.append(ShareGenerator.create_share(epic))
         return list_of_shares
 
-    #def assign_hist_prices !!!!
+
 
 
 # test
 
-mylst = ShareGenerator.shares_maker(["BP", "SHELL"])
+mylst = ShareGenerator.shares_maker(["ERM", "AML", "CGL", "NG"])
 
 print(mylst)
 
