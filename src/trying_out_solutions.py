@@ -15,8 +15,7 @@ def order_by_erb(lst2d_shareprices, rf, mkt_prices):
     return ordered_shares
 
 
-
-def cut_off_rate(lst_shares, rf, mkt_prices):
+def cut_off_rates(lst_shares, rf, mkt_prices):
 
     index = 0
     num_components = []
@@ -31,7 +30,6 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
                 float(c.beta(lst_shares[index], mkt_prices)) / \
                 float(c.specific_risk(lst_shares[index], mkt_prices))
             )
-
             index += 1
 
     count = 0
@@ -55,13 +53,16 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
 
         num_element = num_components[:-n or None]  # to remove the last N elements of a list.
 
-        co_rates.append(num_element)
+        den_element = denom_components[:-n or None]
 
+        var_mkt = c.total_risk(mkt_prices)
 
+        cof = (var_mkt * sum(num_element)) / \
+              (1 + var_mkt * (sum(den_element)))
 
+        co_rates.append(cof)
 
-
-    return num_components, denom_components, co_rates
+    return co_rates
 
 
 
@@ -123,7 +124,7 @@ NGprices = [float(i) for i in array4]
 testlist = order_by_erb([NGprices, AMLprices, CGLprices, ERMprices], 1.5, MKTprices)
 
 
-test = cut_off_rate(testlist, 1.5, MKTprices)
+test = cut_off_rates(testlist, 1.5, MKTprices)
 
 for i in test:
     print(i)
