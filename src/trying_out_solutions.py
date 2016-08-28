@@ -15,7 +15,7 @@ def order_by_erb(lst2d_shareprices, rf, mkt_prices):
     return ordered_shares
 
 
-def cut_off_rates(lst_shares, rf, mkt_prices):
+def cut_off_rate(lst_shares, rf, mkt_prices):
 
     index = 0
     num_components = []
@@ -57,12 +57,18 @@ def cut_off_rates(lst_shares, rf, mkt_prices):
 
         var_mkt = c.total_risk(mkt_prices)
 
-        cof = (var_mkt * sum(num_element)) / \
-              (1 + var_mkt * (sum(den_element)))
+        cof = round(float((var_mkt * sum(num_element)) / \
+              (1 + var_mkt * (sum(den_element)))), 2)
 
         co_rates.append(cof)
 
-    return co_rates
+    erbs_shares = []
+
+    for i in lst_shares:
+        erbs_shares.append(c.erb(i, mkt_prices, rf))
+
+
+    return co_rates, erbs_shares
 
 
 
@@ -124,7 +130,7 @@ NGprices = [float(i) for i in array4]
 testlist = order_by_erb([NGprices, AMLprices, CGLprices, ERMprices], 1.5, MKTprices)
 
 
-test = cut_off_rates(testlist, 1.5, MKTprices)
+test = cut_off_rate(testlist, 1.5, MKTprices)
 
 for i in test:
     print(i)
