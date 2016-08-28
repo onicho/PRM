@@ -1,3 +1,4 @@
+
 class Portfolio:
 
     def __init__(self, lst_of_shares):
@@ -173,6 +174,7 @@ with open("NGprices.txt", "r") as ins:
 NGprices = [float(i) for i in array4]
 
 ###########################################
+
 
 testlist = order_by_erb([NGprices, AMLprices, ERMprices, CGLprices], 1.5, MKTprices)
 
