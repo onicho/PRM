@@ -67,13 +67,18 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
     for i in lst_shares:
         erbs_shares.append(c.erb(i, mkt_prices, rf))
 
+    cof_rate = 0
+    item_index = 0
+    found = False
 
-    return co_rates, erbs_shares
+    while not found and item_index < len(co_rates):
+        if co_rates[item_index] <= erbs_shares[item_index + 1]:
+            item_index += 1
+        else:
+            cof_rate = co_rates[item_index]
+            found = True
 
-
-
-
-
+    return cof_rate
 
 
 
@@ -127,15 +132,15 @@ NGprices = [float(i) for i in array4]
 
 ###########################################
 
-testlist = order_by_erb([NGprices, AMLprices, CGLprices, ERMprices], 1.5, MKTprices)
+testlist = order_by_erb([NGprices, AMLprices, ERMprices, CGLprices], 1.5, MKTprices)
 
 
 test = cut_off_rate(testlist, 1.5, MKTprices)
 
-for i in test:
-    print(i)
+# for i in test:
+#     print(i)
 
-#print(test)
+print(test)
 
 
 #############################################
