@@ -1,24 +1,24 @@
 
-from sqlalchemy import *
-from sqlalchemy.engine import reflection
+# from sqlalchemy import *
+# from sqlalchemy.engine import reflection
+#
+# URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
+#
+# engine = create_engine(URL, echo = True)
+#
+# #inspection = reflection.Inspector.from_engine(engine)
+# #print(inspection.get_table_names())
+#
+# conn = engine.connect()
 
-URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
 
-engine = create_engine(URL, echo = True)
-
-#inspection = reflection.Inspector.from_engine(engine)
-#print(inspection.get_table_names())
-
-conn = engine.connect()
-
-
-s = text(
-        "SELECT EPIC"
-        " FROM SHARE_CALENDAR"
-        " WHERE SHARE_CALENDAR.CALENDAR_DATE = '2009-01-01' "
-    )
-
-result = [dict(r) for r in conn.execute(s)]
+# s = text(
+#         "SELECT EPIC"
+#         " FROM SHARE_CALENDAR"
+#         " WHERE SHARE_CALENDAR.CALENDAR_DATE = '2009-01-01' "
+#     )
+#
+# result = [dict(r) for r in conn.execute(s)]
 
 #myresult = result.fetchone()
 
@@ -26,10 +26,10 @@ result = [dict(r) for r in conn.execute(s)]
 # for row in myresult:
 #     d = dict(row.items())
 #     a.append(d)
-print(result)
-
-for i in result:
-    print(i)
+# print(result)
+#
+# for i in result:
+#     print(i)
 
 """
 In[2]: l = [{'EPIC': '^FTSE'}, {'EPIC': 'BP'}, {'EPIC': 'LLOY'}, {'EPIC': 'RBS'}, {'EPIC': 'TSCO'}]
@@ -44,7 +44,39 @@ Out[7]: 'BP'
 In[8]: type(x[0])
 Out[8]: str
 
-
-
+#############################################################
 
 """
+from pycurl import SHARE
+
+from sqlalchemy import *
+URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
+
+engine = create_engine(URL, echo = True)
+
+conn = engine.connect()
+
+query  = text(
+        "INSERT INTO SHARE (EPIC, SHARE_NAME) "
+        "VALUES ('OLYA', 'OOOOOO')"
+)
+
+
+#conn.execute(query)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
