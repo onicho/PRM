@@ -20,6 +20,6 @@ class ShareGenerator:
 
 mylst = ShareGenerator.shares_maker(["ERM", "AML", "CGL", "NG"])
 
-print(mylst)
+print(type(mylst[0]))
 
-print(mylst[0].get_historical_prices())
+#print(mylst[0].get_historical_prices())

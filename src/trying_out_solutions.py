@@ -58,11 +58,11 @@ conn = engine.connect()
 
 query  = text(
         "INSERT INTO SHARE (EPIC, SHARE_NAME) "
-        "VALUES ('OLYA', 'OOOOOO')"
+        "VALUES ('BEN', 'HI')"
 )
 
 
-#conn.execute(query)
+print(conn.execute(query))
 
 
 
