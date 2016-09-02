@@ -14,6 +14,15 @@ class ShareGenerator:
         return list_of_shares
 
 
+class ShareFactory(object):
+    @staticmethod
+    def create(ticker):
+        s = Share(ticker)
+        dbo = Database(connection)
+        # can also look up descriptors
+        s.historical_price = dbo.get_historical_price(ticker)
+        return s
+
 
 
 # test
@@ -23,3 +32,5 @@ mylst = ShareGenerator.shares_maker(["ERM", "AML", "CGL", "NG"])
 print(type(mylst[0]))
 
 #print(mylst[0].get_historical_prices())
+
+shares = [Share(x) for x in ["ERM", "AML"]]

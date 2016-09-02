@@ -1,6 +1,6 @@
 # create class share
 
-class Share:
+class Share(object):   # look up new-style classes
     ## Constructs a share
     #
     def __init__(self, name):
@@ -28,7 +28,7 @@ class Share:
         self.hist_price_period['END_DATE'] = end_date_str
         self.hist_price_period['PRICE_FREQUENCY'] = frequency_str
 
-    def get_hist_orice_period(self):
+    def get_hist_price_period(self):
         return self.hist_price_period
 
 
