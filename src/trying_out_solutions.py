@@ -47,22 +47,22 @@ Out[8]: str
 #############################################################
 
 """
-from pycurl import SHARE
-
-from sqlalchemy import *
-URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
-
-engine = create_engine(URL, echo = True)
-
-conn = engine.connect()
-
-query  = text(
-        "INSERT INTO SHARE (EPIC, SHARE_NAME) "
-        "VALUES ('BEN', 'HI')"
-)
-
-
-print(conn.execute(query))
+# from pycurl import SHARE
+#
+# from sqlalchemy import *
+# URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
+#
+# engine = create_engine(URL, echo = True)
+#
+# conn = engine.connect()
+#
+# query  = text(
+#         "INSERT INTO SHARE (EPIC, SHARE_NAME) "
+#         "VALUES ('BEN', 'HI')"
+# )
+#
+#
+# print(conn.execute(query))
 
 
 

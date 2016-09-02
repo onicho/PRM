@@ -25,7 +25,7 @@ cursor.execute("SELECT distinct epic FROM [dbo].[SHARE]")
 po = cursor.fetchall()
 
 for epicCode in po:
-    print("Next Ticker is " + epicCode[0])
+    #print("Next Ticker is " + epicCode[0])
 
     ShareObject = Share(epicCode[0] + lonExt)
 
