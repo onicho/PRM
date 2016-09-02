@@ -12,14 +12,14 @@ lonExt = '.L'
 #
 # engine = create_engine(URL, echo=True)
 
-cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM_Lite;Integrated Security=True')
+cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM;Integrated Security=True')
 cursor = cnxn.cursor()
 
 # sharesQuery = text(
 #     "SELECT distinct epic "
 #     "FROM [dbo].[SHARE]"
 # )
-cursor.execute("SELECT distinct epic FROM [dbo].[SHARE]")
+cursor.execute("SELECT distinct epic FROM [dbo].[vw_S]")
 #po = conn1.execute(sharesQuery)
 
 po = cursor.fetchall()
@@ -29,7 +29,7 @@ for epicCode in po:
 
     ShareObject = Share(epicCode[0] + lonExt)
 
-    prices = [{p['Date']: p['Close']} for p in ShareObject.get_historical('2009-01-01', '2009-01-15')]
+    prices = [{p['Date']: p['Close']} for p in ShareObject.get_historical('2009-01-01', '2016-09-01')]
 
     for priceDict in prices:
         cnxn.cursor()
