@@ -1,3 +1,60 @@
+import pyodbc
+
+#ERM share
+
+#period '2009-01-01' , 2014-12-01)
+
+
+cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM;Integrated Security=True')
+cursor = cnxn.cursor()
+
+
+
+
+
+
+
+cursor.execute("SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
+               "where epic = 'ERM' and (CALENDAR_DATE between '2009-01-01' and '2014-12-31')")
+
+
+share_prices = [float(p[0]) for p in cursor.fetchall()]
+
+for item in share_prices:
+    print(item)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # from sqlalchemy import *
 # from sqlalchemy.engine import reflection

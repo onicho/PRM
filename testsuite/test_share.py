@@ -11,11 +11,11 @@ class TestShare(TestCase):
         s = Share("BP")
         self.assertFalse(s.getName() == "LLOY")
 
-    def test_set_historical_prices(self):
-        s = Share("BP")
-        hist_pr = {'2009-01-01': 30, '2010-01-01': 35, '2011-01-01': 40}
-        s.set_historical_prices(hist_pr)
-        self.assertEqual(s.get_historical_prices(), hist_pr)
+    # def test_set_historical_prices(self):
+    #     s = Share("BP")
+    #     hist_pr = {'2009-01-01': 30, '2010-01-01': 35, '2011-01-01': 40}
+    #     s.set_historical_prices(hist_pr)
+    #     self.assertEqual(s.get_historical_prices(), hist_pr)
 
 
 

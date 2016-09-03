@@ -17,19 +17,19 @@ class Share(object):   # look up new-style classes
     def getName(self):
         return self.name
 
-    def set_historical_prices(self, historical_prices):
-        self.historical_prices = historical_prices
-
-    def get_historical_prices(self):
-        return self.historical_prices
+    # def set_historical_prices(self, historical_prices):
+    #     self.historical_prices = historical_prices
+    #
+    # def get_historical_prices(self):
+    #     return self.historical_prices
 
     def update_hist_price_period(self, start_date_str, end_date_str, frequency_str = 'monthly'):
         self.hist_price_period['START_DATE'] = start_date_str
         self.hist_price_period['END_DATE'] = end_date_str
         self.hist_price_period['PRICE_FREQUENCY'] = frequency_str
 
-    def get_hist_price_period(self):
-        return self.hist_price_period
+    # def get_hist_price_period(self):
+    #     return self.hist_price_period
 
 
 # s1 = Share("LLOY")
