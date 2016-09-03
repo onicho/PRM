@@ -23,7 +23,7 @@ class ShareFactory(object):
         cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM;Integrated Security=True')
         cursor = cnxn.cursor()
         cursor.execute("SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
-                       "where epic = '" + ticker + "' and (CALENDAR_DATE between '" + start_date + "' and '" + end_date + "')")
+                       "where epic = '" + ticker + "' and (CALENDAR_DATE between '" + start_date + "' and '" + end_date +"')")
         share_prices = [float(p[0]) for p in cursor.fetchall()]
         s.historical_prices = share_prices
         return s
@@ -37,7 +37,7 @@ class ShareFactory(object):
 
 
 
-x = ShareFactory.create('ERM', '2009-01-01','2014-12-31')
+x = ShareFactory.create('^FTSE', '2009-01-01','2014-12-31')
 
 print(x, x.historical_prices)
 
