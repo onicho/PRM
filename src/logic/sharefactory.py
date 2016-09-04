@@ -40,13 +40,13 @@ class ShareFactory(object):
 
 
 
-x = ShareFactory.create('^FTSE', '2009-01-01','2014-12-31')
-
-for price in x.historical_prices:
-    print(price)
-
-
-print(len(x.historical_prices))
+# x = ShareFactory.create('^FTSE', '2009-01-01','2014-12-31')
+#
+# for price in x.historical_prices:
+#     print(price)
+#
+#
+# print(len(x.historical_prices))
 
 
 

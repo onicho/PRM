@@ -1,139 +1,49 @@
-import pyodbc
+from logic.sharefactory import *
+from logic.portfolio import *
+from logic.calculator import *
 
-#ERM share
+list_of_epic_strings = ['ERM', 'AML', 'CGL', 'NG']
 
-#period '2009-01-01' , 2014-12-01)
+shares = []
 
+for epic in list_of_epic_strings:
+    shares.append(ShareFactory.create(epic, '2009-01-01', '2014-12-31'))
 
-cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM;Integrated Security=True')
-cursor = cnxn.cursor()
+market = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 
+share = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
 
+p = EltonGruberPortfolio(shares, market, 1.5)
 
+print(p.shares_alphas(p.candidate_shares, p.mkt_ticker, p.risk_free_rate))
 
+print(p.shares_specific_risk(p.candidate_shares, p.mkt_ticker))
 
+print(p.shares_betas(p.candidate_shares, p.mkt_ticker))
 
+print(p.mkt_return( p.mkt_ticker))
 
-cursor.execute("SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
-               "where epic = 'ERM' and (CALENDAR_DATE between '2009-01-01' and '2014-12-31')")
+print(p.mkt_risk( p.mkt_ticker))
 
 
-share_prices = [float(p[0]) for p in cursor.fetchall()]
+print(p.order_by_erb(p.candidate_shares, p.risk_free_rate, p.mkt_ticker))
 
-for item in share_prices:
-    print(item)
 
+print(p.cut_off_rate(p.order_by_erb(p.candidate_shares, p.risk_free_rate, p.mkt_ticker), p.risk_free_rate, p.mkt_ticker))
 
 
+index = (p.cut_off_rate(p.order_by_erb(p.candidate_shares, p.risk_free_rate, p.mkt_ticker), p.risk_free_rate, p.mkt_ticker))
 
+filtered  = p.cor_filter_shares_portf(p.order_by_erb(p.candidate_shares, p.risk_free_rate, p.mkt_ticker), index)
 
+print(p.unadjusted_weights(filtered, market, index, p.risk_free_rate))
 
+print(p.normalised_weights(p.unadjusted_weights(filtered, market, index, p.risk_free_rate)))
 
+nw = p.normalised_weights(p.unadjusted_weights(filtered, market, index, p.risk_free_rate))
 
+print(sum(p.norm_weight_percent(nw)))
 
+p.zip_shares_proportions(filtered, p.norm_weight_percent(nw))
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# from sqlalchemy import *
-# from sqlalchemy.engine import reflection
-#
-# URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
-#
-# engine = create_engine(URL, echo = True)
-#
-# #inspection = reflection.Inspector.from_engine(engine)
-# #print(inspection.get_table_names())
-#
-# conn = engine.connect()
-
-
-# s = text(
-#         "SELECT EPIC"
-#         " FROM SHARE_CALENDAR"
-#         " WHERE SHARE_CALENDAR.CALENDAR_DATE = '2009-01-01' "
-#     )
-#
-# result = [dict(r) for r in conn.execute(s)]
-
-#myresult = result.fetchone()
-
-# a = []
-# for row in myresult:
-#     d = dict(row.items())
-#     a.append(d)
-# print(result)
-#
-# for i in result:
-#     print(i)
-
-"""
-In[2]: l = [{'EPIC': '^FTSE'}, {'EPIC': 'BP'}, {'EPIC': 'LLOY'}, {'EPIC': 'RBS'}, {'EPIC': 'TSCO'}]
-In[3]: x = [d['value'] for d in l if 'value' in d]
-In[4]: x
-Out[4]: []
-In[5]: x = [d['EPIC'] for d in l if 'EPIC' in d]
-In[6]: x
-Out[6]: ['^FTSE', 'BP', 'LLOY', 'RBS', 'TSCO']
-In[7]: x[1]
-Out[7]: 'BP'
-In[8]: type(x[0])
-Out[8]: str
-
-#############################################################
-
-"""
-# from pycurl import SHARE
-#
-# from sqlalchemy import *
-# URL = 'mssql+pyodbc://GMT04999:1433/PRM_Lite?driver=SQL+Server'
-#
-# engine = create_engine(URL, echo = True)
-#
-# conn = engine.connect()
-#
-# query  = text(
-#         "INSERT INTO SHARE (EPIC, SHARE_NAME) "
-#         "VALUES ('BEN', 'HI')"
-# )
-#
-#
-# print(conn.execute(query))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print(p.final_active_portfolio)
