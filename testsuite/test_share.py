@@ -1,5 +1,5 @@
 from unittest import TestCase
-from BusinessLogic.share import Share
+from logic.share import Share
 
 
 class TestShare(TestCase):

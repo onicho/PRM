@@ -1,4 +1,4 @@
-from BusinessLogic.share import Share
+from logic.share import Share
 import pyodbc
 
 
@@ -51,19 +51,3 @@ print(len(x.historical_prices))
 
 
 
-
-
-
-
-#shares = [Share(x) for x in ["ERM", "AML"]]
-
-####################################################
-
-
-# @staticmethod
-# def create(ticker, start_date, end_date):
-#     s = Share(ticker)
-#     dbo = Database(connection)
-#     # can also look up descriptors
-#     s.historical_price = dbo.get_historical_price(ticker)
-#     return s

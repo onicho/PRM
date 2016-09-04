@@ -1,4 +1,4 @@
-from BusinessLogic.calculator import Calculator
+from logic.calculator import Calculator
 
 c = Calculator()
 

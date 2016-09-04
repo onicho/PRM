@@ -5,14 +5,7 @@ class Portfolio:
         self.candidate_shares = lst_of_shares
         self.optimal_active_portf = []
 
-
-
-
-
-
-
-
-from BusinessLogic.calculator import *
+from logic.calculator import *
 from collections import *
 
 c = Calculator()

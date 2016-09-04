@@ -132,7 +132,7 @@ print(a_std1)
 
 """
 from numpy import corrcoef
-from BusinessLogic.share import Share
+from logic.share import Share
 
 def find_correlation(list_of_shares):
     lists_of_prices_to_correlate = []
