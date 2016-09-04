@@ -19,7 +19,7 @@ cursor = cnxn.cursor()
 #     "SELECT distinct epic "
 #     "FROM [dbo].[SHARE]"
 # )
-cursor.execute("SELECT distinct epic FROM [dbo].[vw_S]")
+cursor.execute("SELECT distinct epic FROM [dbo].[SHARE]") #!!!!!!!!
 #po = conn1.execute(sharesQuery)
 
 po = cursor.fetchall()

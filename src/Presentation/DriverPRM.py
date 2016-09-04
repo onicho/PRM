@@ -1,71 +1,71 @@
-class DriverPRM(object):
-    """
-        Class DriverPRM is the 'main' class of the module,
-        which contains the main method.
-        Interation with the user occurs in this class
+import pyodbc
 
-    """
 
-    def __init__(self):
-        self.share_epics = []
-        self.calendar_period = []
+class UserInput(object):
 
-    def get_epic_codes_from_user(
-            self):  # let's start with return calculators, so they can enter anything between 1-10 EPICs
-        print()
-        print("if you want to calculate return for a share ......")
-        print()
+    def get_tickers(self):
+        tickers = []
+
         input_correct = False
         count = 0
         sentinel_value = "-1"
 
         while not input_correct and count < 10:
-            epic = input('Please enter an EPIC code of a share( -1 to finish): ')
-            epic = epic.upper().replace(" ", "")
+            print()
+            ticker = input('Please enter an EPIC code of a share( -1 to finish): ')
+            ticker = ticker.upper().replace(" ", "")
             try:
-                if (4 >= len(epic) >= 2) and str(epic).isalpha():
-                    self.share_epics.append(epic)
+                if self.valid(ticker) and ticker not in tickers:
+                    tickers.append(ticker)
                     count += 1
                     if count == 10:
-                        print("You have reached the maximum num of share in a portfolio 10 ")
-                        break
-                elif epic == sentinel_value:
-                    break
+                        print("You have reached the maximum number of 10 shares in a portfolio")
+                        return tickers
+                        # break
 
-                    # addepic = input("If you don;t want to add any more shares type STOP, else carry on:  ")
-                    # if addepic == 'stop':
-                    #     break
+                elif ticker == sentinel_value:
+                    return tickers
+
                 else:
                     print()
-                    print("An EPIC code is an abbreviation 2-4 characters long.  Please  try again.")
-                    print()
+                    print("Invalid entry. Possible causes: EPIC already exists or ")
+                    print("entered code is incorrect. Refer to the table at the top")
 
             except ValueError:
                 print()
-                print("Invalid entry. You have to enter numbers 0-9. Please try again.")
+                print("Invalid entry. An EPIC code is a combination of alphabetic characters that represent a share ")
                 print()
 
-    def get_period_from_user(self):
+
+    @staticmethod
+    def get_period_from_user():
+        calendar_period = []
         print()
         print("please enter the assessment period in the following format yyyy-mm-dd......")  # RE-WORD
         print()
         start_date = input("FROM:  ")  # DO ERROR CATCHING
         end_date = input("TO:  ")  # DO ERROR CATCHING
 
-        self.calendar_period.append(start_date)  # ????
-        self.calendar_period.append(end_date)
+        calendar_period.append(start_date)  # ????
+        calendar_period.append(end_date)
+        return calendar_period
 
-    def get_calendar_period(self):
-        return self.calendar_period
+    @staticmethod
+    def valid(ticker):
+        cnxn = pyodbc.connect('driver={SQL Server};server=localhost;database=PRM;Integrated Security=True')
+        cursor = cnxn.cursor()
+        cursor.execute("SELECT distinct epic FROM [dbo].[SHARE]")
+        if ticker.upper() in [ticker[0] for ticker in cursor.fetchall()]:
+            return True
+        else:
+            return False
 
-    def get_share_epics(self):
-        return self.share_epics
 
+test = UserInput()
+print(test.get_tickers())
+#print(type(test.tickers[1]))
 
-# test = DriverPRM()
-# test.get_epic_codes_from_user()
-# print(test.get_share_epics())
-# print(type(test.get_share_epics()))
-#
-# test.get_period_from_user()
-# print(test.get_calendar_period())
+# print(type(test.calendar_period))
+# #
+# # test.get_period_from_user()
+# # print(test.get_calendar_period())
