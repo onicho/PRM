@@ -5,6 +5,7 @@ c = Calculator()
 
 
 class Portfolio(object):
+
     def __init__(self, lst_of_shares, market_ticker, rfr):
         self.candidate_shares = lst_of_shares
         self.risk_free_rate = rfr
@@ -198,6 +199,8 @@ class TreynorBlackPortfolio(Portfolio):
         super().__init__(lst_of_shares, market_ticker, rfr)
         self.final_active_portfolio = []
         self.active_proportion_tb = 0
+        self.zip_shares_proportions()
+        self.active_port()
 
     def non_zero_alpha(self):
         return all(alpha != 0 for alpha in self.shares_alphas())
@@ -251,32 +254,45 @@ class TreynorBlackPortfolio(Portfolio):
 
             return sum(a)
 
-    def portfolio_beta(self, adjusted_weights, betas):
-        if len(adjusted_weights) == len(betas):
+    def portfolio_beta(self):
+
+        betas = self.shares_betas()
+        weights = self.adjusted_weights()
+
+        if len(weights) == len(betas):
 
             position = 0
             b = []
             while position < len(betas):
-                b.append(adjusted_weights[position] * betas[position])
+                b.append(weights[position] * betas[position])
                 position += 1
 
             return sum(b)
 
-    @staticmethod
-    def portfolio_specific_risk(adjusted_weights, shares_spec_risk):
-        if len(adjusted_weights) == len(shares_spec_risk):
+    def portfolio_specific_risk(self):
+
+        sr_shares = self.shares_specific_risk()
+        weights = self.adjusted_weights()
+
+        if len(weights) == len(sr_shares):
 
             position = 0
             sr = []
-            while position < len(shares_spec_risk):
-                sr.append(round(pow(adjusted_weights[position], 2), 4) * round(shares_spec_risk[position], 2))
+            while position < len(sr_shares):
+                sr.append(round(pow(weights[position], 2), 4) * round(sr_shares[position], 2))
                 position += 1
 
             return sum(sr)
 
-    def active_port(self, port_alpha, port_beta, port_sp, return_mkt, rf, totrisk_mkt):
+    def active_port(self):
 
-        w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(rf)) / float(totrisk_mkt))
+        port_alpha = self.portfolio_alpha()
+        port_beta = self.portfolio_beta()
+        port_sp = self.portfolio_specific_risk()
+        return_mkt = self.mkt_return()
+        totrisk_mkt = self.mkt_risk()
+
+        w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(self.risk_free_rate)) / float(totrisk_mkt))
 
         w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
 
