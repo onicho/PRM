@@ -49,7 +49,8 @@ def unadjust_weights(alphas, specific_risk, bool):
         return unadj_w
 
     else:
-        pass
+        print("Some of the candidate securities' alphas are equal to zero.")
+
 
 
 def adjust_weights(unadj_weights):

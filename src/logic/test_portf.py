@@ -40,12 +40,10 @@ class Portfolio(object):
         riskmkt = c.total_risk(mkt_ticker.historical_prices)
         return riskmkt
 
-    @staticmethod
-    def unadjusted_weights():
+    def unadjusted_weights(self):
         pass
 
-    @staticmethod
-    def adjusted_weights(unadj_weights):
+    def adjusted_weights(self, unadjusted_weights):
         pass
 
 
@@ -54,57 +52,66 @@ class EltonGruberPortfolio(Portfolio):
     def __init__(self, lst_of_shares, market_ticker, rfr):
 
         super().__init__(lst_of_shares, market_ticker, rfr)
-        self.final_active_portfolio = {}
 
-    @staticmethod
-    def order_by_erb(candidate_shares, risk_free_rate, mkt_ticker):
+        """
+        self.candidate_shares = lst_of_shares
+        self.risk_free_rate = rfr
+        self.mkt_ticker = market_ticker
+
+        """
+        self.final_active_portfolio = {}
+        self.zip_shares_proportions()
+
+    def order_by_erb(self):
+
         erbs_shares = {}
 
-        for i in candidate_shares:
-            erbs_shares[c.erb(i.historical_prices, mkt_ticker.historical_prices, risk_free_rate)] = i
+        for share in self.candidate_shares:
+            erbs_shares[c.erb(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)] = share
 
         ordered_shares = [item[1] for item in sorted(erbs_shares.items(), reverse=True)]
         return ordered_shares
 
-    @staticmethod
-    def cut_off_rate(ordered_shares, rf, mkt_ticker):
+    def cut_off_rate(self):
+
         index = 0
         num_components = []
+        shares = self.order_by_erb()
 
-        for item in ordered_shares:
+        for item in shares:
 
-            while index <= ordered_shares.index(item):
+            while index <= shares.index(item):
                 num_components.append(
                     float((c.annualise_as_percentage(
-                        c.average_return(c.return_on_share_prices(ordered_shares[index].historical_prices)))) - rf) * \
-                    float(c.beta(ordered_shares[index].historical_prices, mkt_ticker.historical_prices)) / \
-                    float(c.specific_risk(ordered_shares[index].historical_prices, mkt_ticker.historical_prices))
+                        c.average_return(c.return_on_share_prices(shares[index].historical_prices)))) - self.risk_free_rate) * \
+                    float(c.beta(shares[index].historical_prices, self.mkt_ticker.historical_prices)) / \
+                    float(c.specific_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
                 )
                 index += 1
 
         count = 0
         denom_components = []
 
-        for item in ordered_shares:
+        for item in shares:
 
-            while count <= ordered_shares.index(item):
+            while count <= shares.index(item):
                 denom_components.append(
-                    float(pow(c.beta(ordered_shares[count].historical_prices, mkt_ticker.historical_prices), 2)) / \
-                    float(c.specific_risk(ordered_shares[count].historical_prices, mkt_ticker.historical_prices))
+                    float(pow(c.beta(shares[count].historical_prices, self.mkt_ticker.historical_prices), 2)) / \
+                    float(c.specific_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
                 )
                 count += 1
 
         co_rates = []
 
-        for share in ordered_shares:
-            n = len(ordered_shares) - (ordered_shares.index(share) + 1)
+        for share in shares:
+            n = len(shares) - (shares.index(share) + 1)
 
             num_element = num_components[
                           :-n or None]  # to remove the last N elements of a list.
 
             den_element = denom_components[:-n or None]
 
-            var_mkt = c.total_risk(mkt_ticker.historical_prices)
+            var_mkt = c.total_risk(self.mkt_ticker.historical_prices)
 
             cof = round(float((var_mkt * sum(num_element)) / \
                               (1 + var_mkt * (sum(den_element)))), 2)
@@ -113,8 +120,8 @@ class EltonGruberPortfolio(Portfolio):
 
         erbs_shares = []
 
-        for one_share in ordered_shares:
-            erbs_shares.append(c.erb(one_share.historical_prices, mkt_ticker.historical_prices, rf))
+        for one_share in shares:
+            erbs_shares.append(c.erb(one_share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate))
 
         cof_rate = {}
         item_index = 0
@@ -129,50 +136,67 @@ class EltonGruberPortfolio(Portfolio):
 
         return cof_rate  # co_rates, len(ordered_shares)
 
-    @staticmethod
-    def cor_filter_shares_portf(ordered_shares, cof_index):
-        n = (list(cof_index.values()))[0] + 1
+    def shares_filter(self):
 
-        filtered_shares = ordered_shares[: n]
+        rate = self.cut_off_rate()
+        n = (list(rate.values()))[0] + 1
+
+        shares = self.order_by_erb()
+        filtered_shares = shares[: n]
 
         return filtered_shares
 
-    @staticmethod
-    def unadjusted_weights(filtered_shares, mkt_ticker, cof_index, rf):
-        cof = list(cof_index.keys())[0]
+    def unadjusted_weights(self, cor_filter_shares_portf, cut_off_rate):
+        cof = list(cut_off_rate.keys())[0]
 
         unadj_weights = []
 
-        for item in filtered_shares:
+        for item in cor_filter_shares_portf:
             w = (
-                float((c.beta(item.historical_prices, mkt_ticker.historical_prices) / c.specific_risk(
-                    item.historical_prices, mkt_ticker.historical_prices))) *
+                float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.specific_risk(
+                    item.historical_prices, self.mkt_ticker.historical_prices))) *
 
-                (float(c.erb(item.historical_prices, mkt_ticker.historical_prices, rf)) - float(cof))
+                (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(cof))
             )
             unadj_weights.append(w)
 
         return unadj_weights
 
-    @staticmethod
-    def adjusted_weights(unadj_weights):
-        sum_of_weights = sum(unadj_weights)
+    def adjusted_weights(self, unadjusted_weights):
+        sum_of_weights = sum(unadjusted_weights)
 
         norm_weights = []
 
-        for i in unadj_weights:
+        for i in unadjusted_weights:
             norm_weights.append(i / sum_of_weights)
 
         return norm_weights
 
-    @staticmethod
-    def norm_weight_percent(norm_weights):
-        weights_percent = [round((i * 100), 2) for i in norm_weights]
+    def norm_weight_percent(self, adjusted_weights):
+        weights_percent = [round((i * 100), 2) for i in adjusted_weights]
 
         return weights_percent
 
-    def zip_shares_proportions(self, filtered_shares, norm_weight_percent):
-        self.final_active_portfolio = dict(zip(map(Share, filtered_shares), norm_weight_percent))
+    def zip_shares_proportions(self, cor_filter_shares_portf, norm_weight_percent):
+        self.final_active_portfolio = dict(zip(map(Share, cor_filter_shares_portf), norm_weight_percent))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class TreynorBlackPortfolio(Portfolio):
