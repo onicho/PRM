@@ -15,9 +15,12 @@ class Share(object):
 
     def __init__(self, name):
         r"""
-        Constructs instance variables for class Share, which are the Share name
-        and a list of historical share prices, where each price is a Clothing
-        price of a Share for a day, month or a year.
+        Constructs instance variables for class Share.
+
+        Instance variables are the Share name and a list of historical share
+        prices, where each price in the list is a Clothing price of a Share
+        for a day, month or a year.
+
         :param name: name of a share that corresponds to a market stock ticker
         :type name: str
 
@@ -26,7 +29,7 @@ class Share(object):
         'RBS' or 'BP' or 'TSCO'
         """
         self.name = str(name)
-        self.historical_prices = []
+        self.prices = []  # list of historical share prices for a certain period
 
     def __repr__(self):
         return self.name
@@ -80,6 +83,6 @@ class ShareFactory(object):
         )
         # a list of historical share prices is created and assigned to the share
         share_prices = [float(p[0]) for p in cursor.fetchall()]
-        s.historical_prices = share_prices
+        s.prices = share_prices
 
         return s
