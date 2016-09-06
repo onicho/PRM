@@ -16,6 +16,12 @@ class Calculator(object):
 
     @staticmethod
     def average_return(list_of_prices):
+        r"""
+        Parameters
+        ----------
+        prices: list[float]
+
+        """
         ar_result = float(sum(list_of_prices) / len(list_of_prices))
         return ar_result
 
@@ -41,6 +47,13 @@ class Calculator(object):
 
     @staticmethod
     def annualise_as_percentage(num):
+        r"""
+        Returns
+        -------
+        float: annualised (percent)
+        :param num:
+        :return:
+        """
         annualised_num = num * 12 * 100
         return annualised_num
 
@@ -111,7 +124,7 @@ class Calculator(object):
 
 
 
-
+Calculator().beta()
 
 
 

@@ -3,6 +3,15 @@ from logic.share import Share
 
 c = Calculator()
 
+class HasWeightsMixin(object):
+    # use abc.ABCMeta or whatever it is in Python 3.0
+    @abstractmethod
+    def unadjusted_weights(self):
+        pass
+
+    def adjusted_weights(self):
+        pass
+
 
 class Portfolio(object):
 
@@ -11,11 +20,19 @@ class Portfolio(object):
         self.risk_free_rate = rfr
         self.mkt_ticker = market_ticker
 
+    @property
     def shares_alphas(self):
-        alphas_lst = [c.alpha(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate) for share
-                      in
-                      self.candidate_shares]
+        alphas_lst = [
+            c.alpha(
+                share.historical_prices, self.mkt_ticker.historical_prices,
+                self.risk_free_rate
+            )
+            for share in self.candidate_shares
+        ]
         return alphas_lst
+
+    # p = Portfolio(shares)
+    # alpha = p.alpha
 
     def shares_specific_risk(self):
         risk_nums = [c.specific_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
@@ -36,12 +53,13 @@ class Portfolio(object):
         riskmkt = c.total_risk(self.mkt_ticker.historical_prices)
         return riskmkt
 
-    def unadjusted_weights(self):
-        pass
+    # def unadjusted_weights(self):
+    #     pass
+    #
+    # def adjusted_weights(self):
+    #     pass
 
-    def adjusted_weights(self):
-        pass
-
+    # @property : look it up
     def adj_weight_percent(self):
         weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
         return weights_percent
@@ -50,7 +68,7 @@ class Portfolio(object):
         pass
 
 
-class EltonGruberPortfolio(Portfolio):
+class EltonGruberPortfolio(Portfolio, HasWeightsMixin):
     def __init__(self, lst_of_shares, market_ticker, rfr):
 
         super().__init__(lst_of_shares, market_ticker, rfr)
@@ -83,6 +101,11 @@ class EltonGruberPortfolio(Portfolio):
         for item in shares:
 
             while index <= shares.index(item):
+                # annualised(returns - rfr * beta / specific_risk)
+                rets = c.return_on_share_prices(...)
+                beta = c.beta(...)
+                risk = c.specific_risk(...)
+                value = annualise(average(rets - rfr) * beta / risk)
                 num_components.append(
                     float((c.annualise_as_percentage(
                         c.average_return(

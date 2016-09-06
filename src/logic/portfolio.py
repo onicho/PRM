@@ -173,7 +173,10 @@ class EltonGruberPortfolio(Portfolio):
 
     def zip_shares_proportions(self, filtered_shares, norm_weight_percent):
         self.final_active_portfolio = dict(zip(map(Share, filtered_shares), norm_weight_percent))
-
+        self.final_active_portfolio = {
+            Share(share): norm_weight_percent
+            for share in filtered_shares
+        }
 
 class TreynorBlackPortfolio(Portfolio):
 

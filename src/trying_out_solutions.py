@@ -1,6 +1,5 @@
-from logic.sharefactory import *
+from logic.share import ShareFactory
 from logic.test_portf import *
-from logic.calculator import *
 
 list_of_epic_strings = ['ERM','CGL', 'NG']
 
