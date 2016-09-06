@@ -2,7 +2,7 @@ from logic.sharefactory import *
 from logic.test_portf import *
 from logic.calculator import *
 
-list_of_epic_strings = ['ERM','CGL', 'AML', 'NG']
+list_of_epic_strings = ['ERM','CGL', 'TSCO', 'NG', 'RBS']
 
 shares = []
 
