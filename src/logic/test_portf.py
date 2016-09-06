@@ -10,34 +10,29 @@ class Portfolio(object):
         self.risk_free_rate = rfr
         self.mkt_ticker = market_ticker
 
-    @staticmethod
-    def shares_alphas(candidate_shares, mkt_ticker, rfr):
-        alphas_lst = [c.alpha(share.historical_prices, mkt_ticker.historical_prices, rfr) for share in
-                      candidate_shares]
-
+    def shares_alphas(self):
+        alphas_lst = [c.alpha(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate) for share
+                      in
+                      self.candidate_shares]
         return alphas_lst
 
-    @staticmethod
-    def shares_specific_risk(candidate_shares, mkt_ticker):
-        risk_nums = [c.specific_risk(share.historical_prices, mkt_ticker.historical_prices) for share in
-                     candidate_shares]
-
+    def shares_specific_risk(self):
+        risk_nums = [c.specific_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+                     self.candidate_shares]
         return risk_nums
 
-    @staticmethod
-    def shares_betas(candidate_shares, mkt_ticker):
-        betas_lst = [c.beta(share.historical_prices, mkt_ticker.historical_prices) for share in candidate_shares]
+    def shares_betas(self):
+        betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+                     self.candidate_shares]
 
         return betas_lst
 
-    @staticmethod
-    def mkt_return(mkt_ticker):
-        retmkt = c.annualise_as_percentage(c.average_return(c.return_on_share_prices(mkt_ticker.historical_prices)))
+    def mkt_return(self):
+        retmkt = c.annualise_as_percentage(c.average_return(c.return_on_share_prices(self.mkt_ticker.historical_prices)))
         return retmkt
 
-    @staticmethod
-    def mkt_risk(mkt_ticker):
-        riskmkt = c.total_risk(mkt_ticker.historical_prices)
+    def mkt_risk(self):
+        riskmkt = c.total_risk(self.mkt_ticker.historical_prices)
         return riskmkt
 
     def unadjusted_weights(self):
@@ -46,9 +41,15 @@ class Portfolio(object):
     def adjusted_weights(self):
         pass
 
+    def adj_weight_percent(self):
+        weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
+        return weights_percent
+
+    def zip_shares_proportions(self):
+        pass
+
 
 class EltonGruberPortfolio(Portfolio):
-
     def __init__(self, lst_of_shares, market_ticker, rfr):
 
         super().__init__(lst_of_shares, market_ticker, rfr)
@@ -180,37 +181,15 @@ class EltonGruberPortfolio(Portfolio):
 
         return norm_weights
 
-    def weights_percent(self):
-        weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
-
-        return weights_percent
+    # def adj_weight_percent(self):
+    #     weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
+    #
+    #     return weights_percent
 
     def zip_shares_proportions(self):
         shares = self.shares_filter()
-        weights = self.weights_percent()
+        weights = self.adj_weight_percent()
         self.final_active_portfolio = dict(zip(map(Share, shares), weights))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class TreynorBlackPortfolio(Portfolio):
@@ -220,56 +199,59 @@ class TreynorBlackPortfolio(Portfolio):
         self.final_active_portfolio = []
         self.active_proportion_tb = 0
 
-    @staticmethod
-    def non_zero_alpha(alphas_lst):
-        return all(alpha != 0 for alpha in alphas_lst)
+    def non_zero_alpha(self):
+        return all(alpha != 0 for alpha in self.shares_alphas())
 
-    @staticmethod
-    def unadjusted_weights(alphas, specific_risk, bool):
-        if bool:
+    def unadjusted_weights(self):
+
+        alphas = self.shares_alphas()
+        non_zero = self.non_zero_alpha()
+        sp_risk = self.shares_specific_risk()
+
+        if non_zero:
 
             index = 0
             unadj_w = []
 
             while index < len(alphas):
-                w = alphas[index] / specific_risk[index]
+                w = alphas[index] / sp_risk[index]
                 unadj_w.append(w)
                 index += 1
-
             return unadj_w
-
         else:
             print("Some of the candidate securities' alphas are equal to zero.")
 
-    @staticmethod
-    def adjusted_weights(unadj_weights):
-        adj_w = [float(i / sum(unadj_weights)) for i in unadj_weights]
+    def adjusted_weights(self):
 
+        weights = self.unadjusted_weights()
+        adj_w = [float(w / sum(weights)) for w in weights]
         return adj_w
 
-    @staticmethod
-    def adj_weight_percent(adjusted_weights):
-        weights_percent = [round((i * 100), 2) for i in adjusted_weights]
+    def adj_weight_percent(self):
 
+        weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
         return weights_percent
 
-    def zip_shares_proportions(self, candidate_shares, adj_weight_percent):
-        self.final_active_portfolio = dict(zip(map(Share, candidate_shares), adj_weight_percent))
+    def zip_shares_proportions(self):
+        weights = self.adj_weight_percent()
+        self.final_active_portfolio = dict(zip(map(Share, self.candidate_shares), weights))
 
-    @staticmethod
-    def portfolio_alpha(adjusted_weights, alphas):
-        if len(adjusted_weights) == len(alphas):
+    def portfolio_alpha(self):
+
+        weights = self.adjusted_weights()
+        alphas = self.shares_alphas()
+
+        if len(weights) == len(alphas):
 
             position = 0
             a = []
             while position < len(alphas):
-                a.append(adjusted_weights[position] * alphas[position])
+                a.append(weights[position] * alphas[position])
                 position += 1
 
             return sum(a)
 
-    @staticmethod
-    def portfolio_beta(adjusted_weights, betas):
+    def portfolio_beta(self, adjusted_weights, betas):
         if len(adjusted_weights) == len(betas):
 
             position = 0
