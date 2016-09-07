@@ -92,5 +92,21 @@ class TestShareFactory(TestCase):
         self.assertEqual(factory.name, "")
         self.assertFalse(len(factory.prices) > 0)
 
-
+    def test_create2(self):
+        """Test that a new Share object called '^FTSE' is created and that Share's
+        assigned prices are equal to the list of historica prices copied from
+        PRM database for the same period
+        """
+        factory = ShareFactory.create("^FTSE", "2016-01-01", "2016-08-01")
+        p = [
+            6083.790000000,
+            6097.090000000,
+            6174.900000000,
+            6241.890000000,
+            6230.790000000,
+            6504.330000000,
+            6724.430000000
+        ]
+        self.assertEqual(factory.name, "^FTSE")
+        self.assertEqual(factory.prices, p)
 
