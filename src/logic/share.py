@@ -52,9 +52,10 @@ class ShareFactory(object):
         Creates an object of class Share.
 
         A new Share object is created, which is given a name that corresponds to
-        a stock market ticker (epic code). A connection with a database is
+        a stock market ticker (an epic code). A connection with the database is
         established to retrieve historical prices data for the given period of
-        time. The prices get assigned to the share object.
+        time. The pyodbc package is used to connect the db. Retrieved prices get
+        assigned to the share object.
 
         :param ticker: an epic code of a stock market share
         :param start_date: start of the historical prices data period
@@ -69,20 +70,27 @@ class ShareFactory(object):
         ticker can be 'AML', 'NG' or any other epic code of FTSE100 shares
         ..note:: start and end dates must be in the 'yyyy-mm-dd' format
         """
-        s = Share(ticker)
-        # connection to the PRM database is established
-        cnxn = pyodbc.connect(
-            'driver={SQL Server};server=localhost;database=PRM;Integrated Security=True'
-        )
-        cursor = cnxn.cursor()
-        cursor.execute(
-            "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
-            "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
-            start_date + "' and '" + end_date + "')"
-            "order by CALENDAR_DATE asc "
-        )
-        # a list of historical share prices is created and assigned to the share
-        share_prices = [float(p[0]) for p in cursor.fetchall()]
-        s.prices = share_prices
+        try:
 
-        return s
+            s = Share(ticker)
+            # connection with the PRM database is established
+            cnxn = pyodbc.connect(
+                'driver={SQL Server};server=localhost;database=PRM;Integrated Security=True'
+            )
+            cursor = cnxn.cursor()
+            cursor.execute(
+                "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
+                "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
+                start_date + "' and '" + end_date + "')"
+                "order by CALENDAR_DATE asc "
+            )
+            # a list of historical share prices is created
+            share_prices = [float(p[0]) for p in cursor.fetchall()]
+            # the list of prices is assigned to the Share object
+            s.prices = share_prices
+
+            return s
+
+        except TypeError:
+            print("Check that all parameters are strings and are in the "
+                  "correct format.")
