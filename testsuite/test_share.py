@@ -3,6 +3,7 @@ from logic.share import *
 
 
 class TestShare(TestCase):
+
     def test_name_success(self):
         """Tests that a string given to the class at instantiation
         is assigned as a name to a share object

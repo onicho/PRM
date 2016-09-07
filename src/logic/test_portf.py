@@ -35,7 +35,7 @@ class Portfolio(object):
     # alpha = p.alpha
 
     def shares_specific_risk(self):
-        risk_nums = [c.specific_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+        risk_nums = [c.s_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
                      self.candidate_shares]
         return risk_nums
 
@@ -46,11 +46,11 @@ class Portfolio(object):
         return betas_lst
 
     def mkt_return(self):
-        retmkt = c.annualise_as_percentage(c.average_return(c.return_on_share_prices(self.mkt_ticker.historical_prices)))
+        retmkt = c.annualise(c.average(c.returns(self.mkt_ticker.historical_prices)))
         return retmkt
 
     def mkt_risk(self):
-        riskmkt = c.total_risk(self.mkt_ticker.historical_prices)
+        riskmkt = c.t_risk(self.mkt_ticker.historical_prices)
         return riskmkt
 
     # def unadjusted_weights(self):
@@ -102,16 +102,16 @@ class EltonGruberPortfolio(Portfolio, HasWeightsMixin):
 
             while index <= shares.index(item):
                 # annualised(returns - rfr * beta / specific_risk)
-                rets = c.return_on_share_prices(...)
+                rets = c.returns(...)
                 beta = c.beta(...)
-                risk = c.specific_risk(...)
+                risk = c.s_risk(...)
                 value = annualise(average(rets - rfr) * beta / risk)
                 num_components.append(
-                    float((c.annualise_as_percentage(
-                        c.average_return(
-                            c.return_on_share_prices(shares[index].historical_prices)))) - self.risk_free_rate) * \
+                    float((c.annualise(
+                        c.average(
+                            c.returns(shares[index].historical_prices)))) - self.risk_free_rate) * \
                     float(c.beta(shares[index].historical_prices, self.mkt_ticker.historical_prices)) / \
-                    float(c.specific_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
+                    float(c.s_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
                 )
                 index += 1
 
@@ -123,7 +123,7 @@ class EltonGruberPortfolio(Portfolio, HasWeightsMixin):
             while count <= shares.index(item):
                 denom_components.append(
                     float(pow(c.beta(shares[count].historical_prices, self.mkt_ticker.historical_prices), 2)) / \
-                    float(c.specific_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
+                    float(c.s_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
                 )
                 count += 1
 
@@ -137,7 +137,7 @@ class EltonGruberPortfolio(Portfolio, HasWeightsMixin):
 
             den_element = denom_components[:-n or None]
 
-            var_mkt = c.total_risk(self.mkt_ticker.historical_prices)
+            var_mkt = c.t_risk(self.mkt_ticker.historical_prices)
 
             cof = round(float((var_mkt * sum(num_element)) / \
                               (1 + var_mkt * (sum(den_element)))), 2)
@@ -183,7 +183,7 @@ class EltonGruberPortfolio(Portfolio, HasWeightsMixin):
 
         for item in filtered_shares:
             w = (
-                float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.specific_risk(
+                float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
                     item.historical_prices, self.mkt_ticker.historical_prices))) *
 
                 (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(

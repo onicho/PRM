@@ -30,9 +30,9 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
 
         while index <= lst_shares.index(item):
             num_components.append(
-                float((c.annualise_as_percentage(c.average_return(c.return_on_share_prices(lst_shares[index])))) - rf) * \
+                float((c.annualise(c.average(c.returns(lst_shares[index])))) - rf) * \
                 float(c.beta(lst_shares[index], mkt_prices)) / \
-                float(c.specific_risk(lst_shares[index], mkt_prices))
+                float(c.s_risk(lst_shares[index], mkt_prices))
             )
             index += 1
 
@@ -44,7 +44,7 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
         while count <= lst_shares.index(item):
             denom_components.append(
                 float(pow(c.beta(lst_shares[count], mkt_prices), 2)) / \
-                float(c.specific_risk(lst_shares[count], mkt_prices))
+                float(c.s_risk(lst_shares[count], mkt_prices))
             )
             count += 1
 
@@ -58,7 +58,7 @@ def cut_off_rate(lst_shares, rf, mkt_prices):
 
         den_element = denom_components[:-n or None]
 
-        var_mkt = c.total_risk(mkt_prices)
+        var_mkt = c.t_risk(mkt_prices)
 
         cof = round(float((var_mkt * sum(num_element)) / \
                           (1 + var_mkt * (sum(den_element)))), 2)
@@ -99,7 +99,7 @@ def unadjusted_weights(lst_shares, mkt_prices, cof_index, rf):
 
     for i in lst_shares:
         w = (
-            float((c.beta(i, mkt_prices) / c.specific_risk(i, mkt_prices))) *
+            float((c.beta(i, mkt_prices) / c.s_risk(i, mkt_prices))) *
 
             (float(c.erb(i, mkt_prices, rf)) - float(cof))
         )

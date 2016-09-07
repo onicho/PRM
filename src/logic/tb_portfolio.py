@@ -9,7 +9,7 @@ def shares_alphas(lst_shares, mkt_prices, rf):
 
 
 def shares_specific_risk(lst_shares, mkt_prices):
-    risk_nums = [c.specific_risk(i, mkt_prices) for i in lst_shares]
+    risk_nums = [c.s_risk(i, mkt_prices) for i in lst_shares]
 
     return risk_nums
 
@@ -20,12 +20,12 @@ def shares_betas(lst_shares, mkt_prices):
 
 
 def mkt_return(mkt_prices):
-    retmkt = c.annualise_as_percentage(c.average_return(c.return_on_share_prices(mkt_prices)))
+    retmkt = c.annualise(c.average(c.returns(mkt_prices)))
     return retmkt
 
 
 def mkt_risk(mkt_prices):
-    riskmkt = c.total_risk(mkt_prices)
+    riskmkt = c.t_risk(mkt_prices)
     return riskmkt
 
 

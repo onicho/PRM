@@ -21,6 +21,8 @@ class Share(object):
         prices, where each price in the list is a Clothing price of a Share
         for a day, month or a year.
 
+        Parameters
+        ----------
         :param name: name of a share that corresponds to a market stock ticker
         :type name: str
 
@@ -57,6 +59,8 @@ class ShareFactory(object):
         time. The pyodbc package is used to connect the db. Retrieved prices get
         assigned to the share object.
 
+        Parameters
+        ----------
         :param ticker: an epic code of a stock market share
         :param start_date: start of the historical prices data period
         :param end_date: end of the historical prices data period
@@ -75,7 +79,8 @@ class ShareFactory(object):
             s = Share(ticker)
             # connection with the PRM database is established
             cnxn = pyodbc.connect(
-                'driver={SQL Server};server=localhost;database=PRM;Integrated Security=True'
+                'driver={SQL Server};server=localhost;database=PRM;Integrated '
+                'Security=True'
             )
             cursor = cnxn.cursor()
             cursor.execute(
