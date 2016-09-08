@@ -4,6 +4,7 @@ assessments for Share objects by using Shares' historical prices values
 
 import numpy as np
 import statistics
+from logic.share import *
 
 
 def average(nums):
@@ -108,18 +109,24 @@ def annualise(num):
     return anld
 
 
-def correlate(shares):
+def correlation(prices):
     r"""
     Calculates a correlation coefficient between each pair of shares
 
     Parameters
     ----------
-    :param shares: Share object
-    :type shares: list[Share]
-    :return:
-    """
-    prices = [share.prices for share in shares]
+    :param prices: list containing arrays of prices or rates of return
+    :type prices: list[list[float]]
+    :return: the N-dimentional array with correlation coefficients for each pair
+    :return type: array(array(float))
 
+    :Example:
+
+    produced results for correlated Share A and Share B
+              A              B
+    A   [[ 1.          0.31029782]
+    B   [ 0.31029782  1.        ]]
+    """
     if len(prices) > 1:
 
         correlations = np.corrcoef(prices)
@@ -128,8 +135,7 @@ def correlate(shares):
     else:
         print("Insufficient number of shares to calculate correlations.  " +
               " (Minimum 2 required, but %(num)d were provided)" % {
-                  "num": len(shares)})
-
+                  "num": len(prices)})
 
 
 

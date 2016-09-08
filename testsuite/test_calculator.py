@@ -265,6 +265,48 @@ class TestCorrelate(TestCase):
         :return:
         """
         # instantiating a Share objects with prices
-        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-        self.fail()
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+
+        sharelist = [s1.prices, s2.prices]
+        # Result produced by Excel's correl function = 0.659850802
+        # Result produced by a scientific calculator = 0.6598508
+        npt.assert_almost_equal(correlation(sharelist)[1][0], 0.659850802)
+
+    def test_correlate1(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        sharelist = [returns(s1.prices), returns(s2.prices)]
+
+        # Result produced by Excel's correl function = 0.310297815057478
+        # Result produced by a scientific calculator = 0.3102978150
+        npt.assert_almost_equal(correlation(sharelist)[1][0], 0.3102978150)
+
+
+    def test_correlate_values(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        sharelist = [returns(s1.prices), returns(s2.prices), returns(s3.prices),
+                     returns(s4.prices), returns(s5.prices)]
+
+        result = np.ravel(correlation(sharelist))
+        my_hypot = all(0 <= value <= 1 for value in result)
+
+        self.assertTrue(my_hypot)
+
+
+
