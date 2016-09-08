@@ -108,26 +108,55 @@ def annualise(num):
     return anld
 
 
+def correlate(shares):
+    r"""
+    Calculates a correlation coefficient between each pair of shares
 
-    #
-    # @staticmethod
-    # def correlate(list_of_shares):
-    #     lists_of_prices_to_correlate = []
-    #
-    #     if len(list_of_shares) > 1:
-    #
-    #         for share in list_of_shares:
-    #             lists_of_prices_to_correlate.append(
-    #                 share.get_historical_prices())
-    #         correlations = corrcoef(lists_of_prices_to_correlate)
-    #         return correlations
-    #
-    #     else:
-    #         print("Insufficient number of shares to perform correlation " +
-    #               " (minimum 2 required, but %(num)d were provided)" % {
-    #                   "num": len(list_of_shares)})
-    #
-    # def beta(self, lst_share_prices, lst_market_prices):
+    Parameters
+    ----------
+    :param shares: Share object
+    :type shares: list[Share]
+    :return:
+    """
+    prices = [share.prices for share in shares]
+
+    if len(prices) > 1:
+
+        correlations = np.corrcoef(prices)
+        return correlations
+
+    else:
+        print("Insufficient number of shares to calculate correlations.  " +
+              " (Minimum 2 required, but %(num)d were provided)" % {
+                  "num": len(shares)})
+
+
+
+
+            # lists_of_prices_to_correlate = []
+            #
+            # if len(shares) > 1:
+            #
+            #     for share in shares:
+            #         lists_of_prices_to_correlate.append(
+            #             share.get_historical_prices())
+            #     correlations = np.corrcoef(lists_of_prices_to_correlate)
+            #     return correlations
+            #
+            # else:
+            #     print("Insufficient number of shares to perform correlation " +
+            #           " (minimum 2 required, but %(num)d were provided)" % {
+            #               "num": len(shares)})
+            #
+
+
+
+
+
+
+
+
+                # def beta(self, lst_share_prices, lst_market_prices):
     #     # cov(x,y)/ var(y)
     #     # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
     #

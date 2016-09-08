@@ -4,115 +4,6 @@ import numpy.testing as npt
 from numpy import *
 from logic.share import *
 
-
-class TestCalculations(TestCase):
-    def test_average(self):
-        """Tests that the average value of a list of values is returned
-        :return: float
-        """
-        nums = [1, 2, 3, 4, 5, 6, 0, 5, 78, 9]
-        nums1 = test
-        nums3 = [10, 15, 100, 11]
-
-        self.assertEqual(average(nums), 11.3)
-        self.assertAlmostEqual(average(nums1), 748.325694444444)
-        self.assertNotEqual(average(nums3), 3.5)
-
-    def test_returns(self):
-        """
-
-        :return:
-        """
-        prices = [1, 1.2, 0.9]
-        result = [0.2, -0.25]
-        prices1 = test
-        npt.assert_almost_equal(returns(prices), result)
-        npt.assert_almost_equal(returns(prices1), returns_test)
-
-    def test_returns_len(self):
-        """
-
-        :return:
-        """
-        # instantiating a Share object with prices
-        s = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
-
-        # variables for the test
-        prices = s.prices
-        result = returns(prices)
-
-        self.assertTrue(len(prices) > len(result))
-        self.assertTrue(len(prices) == len(result) + 1)
-
-    def test_returns_type(self):
-        """
-
-        :return:
-        """
-        # instantiating a Share object with prices
-        s = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-
-        # variables for the test
-        prices = s.prices
-        result = returns(prices)
-
-        self.assertTrue(type(result) == list)
-        self.assertTrue(type(result[0]) == float)
-
-    def test_stdvt(self):
-        """
-
-        :return:
-        """
-        # instantiating a Share object with prices
-        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-
-        # variables for the test
-        prices = s.prices
-        result = stdvt(prices)
-
-        npt.assert_almost_equal(result, 75.350371, decimal=3)
-        self.assertAlmostEqual(result, 75.350371, 3)
-        self.assertTrue(type(result) == float)
-        self.assertFalse(type(result) == int)
-
-
-class TestAnnualise(TestCase):
-
-    def test_annualise_type(self):
-        """
-
-        :return:
-        """
-        # instantiating a Share object with prices
-        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-
-        # variables for the test
-        num = stdvt(s.prices)
-        result = annualise(num)
-
-        self.assertTrue(type(result) == float)
-
-    def test_annualise_logic(self):
-        """
-
-        :return:
-        """
-        # instantiating a Share object with prices
-        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-
-        # variables for the test
-        num = stdvt(s.prices)
-        result = annualise(num)
-
-        self.assertTrue(num * 12 * 100 == result)
-
-
-
-
-
-
-
 test = [
     228.75,
     180,
@@ -264,3 +155,116 @@ returns_test = [
 ]
 
 
+class TestCalculations(TestCase):
+    def test_average(self):
+        """Tests that the average value of a list of values is returned
+        :return: float
+        """
+        nums = [1, 2, 3, 4, 5, 6, 0, 5, 78, 9]
+        nums1 = test
+        nums3 = [10, 15, 100, 11]
+
+        self.assertEqual(average(nums), 11.3)
+        self.assertAlmostEqual(average(nums1), 748.325694444444)
+        self.assertNotEqual(average(nums3), 3.5)
+
+    def test_returns(self):
+        """
+
+        :return:
+        """
+        prices = [1, 1.2, 0.9]
+        result = [0.2, -0.25]
+        prices1 = test
+        npt.assert_almost_equal(returns(prices), result)
+        npt.assert_almost_equal(returns(prices1), returns_test)
+
+    def test_returns_len(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share object with prices
+        s = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+
+        # variables for the test
+        prices = s.prices
+        result = returns(prices)
+
+        self.assertTrue(len(prices) > len(result))
+        self.assertTrue(len(prices) == len(result) + 1)
+
+    def test_returns_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share object with prices
+        s = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # variables for the test
+        prices = s.prices
+        result = returns(prices)
+
+        self.assertTrue(type(result) == list)
+        self.assertTrue(type(result[0]) == float)
+
+    def test_stdvt(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share object with prices
+        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+
+        # variables for the test
+        prices = s.prices
+        result = stdvt(prices)
+
+        npt.assert_almost_equal(result, 75.350371, decimal=3)
+        self.assertAlmostEqual(result, 75.350371, 3)
+        self.assertTrue(type(result) == float)
+        self.assertFalse(type(result) == int)
+
+
+class TestAnnualise(TestCase):
+    def test_annualise_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share object with prices
+        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+
+        # variables for the test
+        num = stdvt(s.prices)
+        result = annualise(num)
+
+        self.assertTrue(type(result) == float)
+
+    def test_annualise_logic(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share object with prices
+        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+
+        # variables for the test
+        num = stdvt(s.prices)
+        result = annualise(num)
+
+        self.assertTrue(num * 12 * 100 == result)
+
+
+class TestCorrelate(TestCase):
+
+    def test_correlate(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        self.fail()
