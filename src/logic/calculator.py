@@ -93,18 +93,17 @@ def annualise(num):
     r"""
     Annualises a values per percentage.
 
-    Use cases: annualising the average monthly return on a share as percentage
-               annualising Standard Deviation of monthly returns as percentage
-
-    Returns
-    -------
-    float: annualised (percent)
+    Use cases
+    ---------
+    annualising the average monthly return of a share as percentage
+    annualising Standard Deviation of monthly returns as percentage
 
     Parameters
     ---------
     :param num: avg monthly return or standard deviation of a share's prices
     :type num: float
-    :return: float
+    :return: annualised value as percent
+    :rtype: float
     """
     anld = float(num) * 12 * 100
     return anld
@@ -159,10 +158,11 @@ def beta(share, market):
     Parameters
     ----------
     :param share: object Share that represents a stock market share
-    :param market: object Share that represents a stock market ticker FTSE100
+    :param market: object Share that represents the stock market ticker FTSE100
     :type share: Share
     :type market: Share
-    :return: float
+    :return: beta value of a stock
+    :rtype: float
     """
 
     # a list of rates of return on a share calculated from share's prices
@@ -173,16 +173,18 @@ def beta(share, market):
             np.cov(s, m, ddof=0)[0][1] / np.var(m)
         )
 
-    return b
+    return float(b)
 
 
-def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
+def alpha(share, market, rf):
     r"""
     Calculates Alpha of a stock.
 
     Alpha value of security is the difference between the actual expected return
-    of a share and the equilibrium expected return of a share:
-
+    of a share and the equilibrium expected return of a share. The return rates
+    of a share for a period of time are calculated, then the average return
+    value is found. The avg return value is annualised because the current
+    version of the system works monthly returns of a share or market.
     Formula
     -------
     alpha = r - [rf + (rm - rf) * Beta]
@@ -194,43 +196,58 @@ def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
 
     Parameters
     ----------
-    :param lst_hist_prices_share:
-    :param lst_hist_prices_market:
+    :param share: object Share that represents a stock market share
+    :param market: object Share that represents the stock market ticker FTSE100
+    :param rf: risk free rate
+    :return: alpha value of a stock
+    :rtype: float
+    """
+
+    rshare = [rate for rate in returns(share.prices)]
+    r = annualise(average(rshare))
+
+    rmarket = [rate for rate in returns(market.prices)]
+    rm = annualise(average(rmarket))
+
+    b = beta(share, market)
+
+    av = r - (rf + (rm - rf) * b)
+
+    return float(av)
+
+s = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+print(alpha(s, m, 100000))
+
+
+def erb(share, market, rf):
+    r"""
+    Excess-Return-to-Beta of a stock
+
+    Calculates risk-adjusted return, which is the average return earned in
+    excess of the risk-free rate per unit of volatility or total risk.
+
+    Formula
+    -------
+
+    :param share:
+    :param market:
     :param rf:
     :return:
     """
-        # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
+        # ERB --> Treynor ratio = (Rs – Rf) ÷ β
+    rs = self.annualise(
+            self.average(
+                [float(item) for item in self.returns(share)]))
 
-    returns_share = [float(item) for item in
-                         self.returns(lst_hist_prices_share)]
-    rs = self.annualise(self.average(returns_share))
+    erb_result = float(
+            (rs - rf) / self.beta(share, market))
 
-    returns_market = [float(item) for item in
-                          self.returns(lst_hist_prices_market)]
-    rm = self.annualise(self.average(returns_market))
-
-    beta_s = self.beta(lst_hist_prices_share, lst_hist_prices_market)
-
-    alpha_s = rs - (rf + (rm - rf) * beta_s)
-
-    return alpha_s
+    return erb_result
 
 
 
-
-
-    #
-    # def erb(self, lst_share_prices, lst_market_prices, rf):
-    #     # ERB --> Treynor ratio = (Rs – Rf) ÷ β
-    #
-    #     rs = self.annualise(
-    #         self.average(
-    #             [float(item) for item in self.returns(lst_share_prices)]))
-    #
-    #     erb_result = float(
-    #         (rs - rf) / self.beta(lst_share_prices, lst_market_prices))
-    #
-    #     return erb_result
     #
     # def t_risk(self, lst_hist_prices):
     #     tr = pow(self.std(lst_hist_prices), 2)

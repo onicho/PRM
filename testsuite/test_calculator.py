@@ -319,7 +319,6 @@ class TestCorrelate(TestCase):
 
 
 class TestBeta(TestCase):
-
     def test_beta(self):
         """
 
@@ -357,8 +356,17 @@ class TestBeta(TestCase):
 
         # Result produced by Excel's slope function = 0.8166701
         # Result produced by a scientific calculator = 0.816670132347
-
         npt.assert_almost_equal(beta(s, m), 0.8166701, 2)
+
+    def test_beta_maket(self):
+        """
+
+        :return:
+        """
+        # instantiating Share objects with prices
+        m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        npt.assert_almost_equal(beta(m, m), 1)
 
     def test_beta_type(self):
         """
@@ -372,3 +380,56 @@ class TestBeta(TestCase):
         self.assertTrue(type(beta(s, m)), float)
 
 
+class TestAlpha(TestCase):
+
+    def test_alpha(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+
+        # Result produced by Excel = 24.69476867
+        # Result produced by a scientific calculator = 24.6947686724029
+        npt.assert_almost_equal(alpha(s1, mkt, rf), 24.6947686724029, 1)
+
+        # Result produced by Excel = -0.98543348578
+        # Result produced by a scientific calculator = -1.00581290854
+        npt.assert_almost_equal(alpha(s2, mkt, rf), -0.98543348578, 1)
+
+        # Result produced by Excel = 12.8146278
+        # Result produced by a scientific calculator = 12.81462
+        npt.assert_almost_equal(alpha(s3, mkt, rf), 12.8146278, 1)
+
+        # Result produced by Excel = 4.66718239333
+        # Result produced by a scientific calculator = 4.65654162
+        npt.assert_almost_equal(alpha(s4, mkt, rf), 4.66718239333, 1)
+
+    def test_alpha_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+
+        self.assertTrue(type(alpha(s1, mkt, rf)), float)
+
+    def test_alpha_maket(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+
+        self.assertFalse(alpha(mkt, mkt, rf) == 0)
