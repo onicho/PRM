@@ -31,7 +31,8 @@ def returns(prices):
     A return over a single period is calculated for each price. To calculate
     the monthly return on a share's prices, the following financial formula
     is applied:
-
+    Formula
+    -------
     Return(R)  = Pt / Pt-1 - 1, where
     Pt is a final price
     Pt-1 is an original price
@@ -47,8 +48,8 @@ def returns(prices):
 
     :Example:
 
-    list of share prices [1, 1.2, 0.9]
-    returned list [0.2, -0.25]
+    returns([1, 1.2, 0.9])
+    [0.2, -0.25]
 
     """
     result = []
@@ -138,60 +139,86 @@ def correlation(prices):
                   "num": len(prices)})
 
 
-def beta(prices, mkt):
+def beta(share, market):
     r"""
     Calculates Beta of a stock
 
     Calculation of beta through regression, i.e. the covariance of the two
     arrays (each contains rates of return for a share) divided by the variance
     of the array of the market index returns. The formula is:
-
+    Formula
+    -------
     Beta  =  Covariance (ri,rm )/Variance of Market , where
     ri = returns on share
     rm = returns on market index
 
+    Numpy methods to estimate covariance and variance are used. Degrees of
+    Freedom ddof is set to 0, which indicates the number of values that are free
+    to vary in the final calculation
+
     Parameters
     ----------
-    :param prices: historical share prices for a period
-    :param mkt: historical market prices for a period
-    :type prices: list[float]
-    :type mkt: list[float]
+    :param share: object Share that represents a stock market share
+    :param market: object Share that represents a stock market ticker FTSE100
+    :type share: Share
+    :type market: Share
     :return: float
     """
-    # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
 
-    share = [rate for rate in returns(prices)]
-    market = [rate for rate in returns(mkt)]
+    # a list of rates of return on a share calculated from share's prices
+    s = [rate for rate in returns(share.prices)]
+    m = [rate for rate in returns(market.prices)]
 
     b = (
-            np.cov(share, market, ddof=0)[0][1]) /\
-        (np.var(market))
+            np.cov(s, m, ddof=0)[0][1] / np.var(m)
+        )
 
-    return beta_result
-    #
-
+    return b
 
 
+def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
+    r"""
+    Calculates Alpha of a stock.
+
+    Alpha value of security is the difference between the actual expected return
+    of a share and the equilibrium expected return of a share:
+
+    Formula
+    -------
+    alpha = r - [rf + (rm - rf) * Beta]
+
+    r =  actual avg return of a share
+    rf = risk free rate
+    rm actual avg return of the market
+    Beta = beta value of a share
+
+    Parameters
+    ----------
+    :param lst_hist_prices_share:
+    :param lst_hist_prices_market:
+    :param rf:
+    :return:
+    """
+        # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
+
+    returns_share = [float(item) for item in
+                         self.returns(lst_hist_prices_share)]
+    rs = self.annualise(self.average(returns_share))
+
+    returns_market = [float(item) for item in
+                          self.returns(lst_hist_prices_market)]
+    rm = self.annualise(self.average(returns_market))
+
+    beta_s = self.beta(lst_hist_prices_share, lst_hist_prices_market)
+
+    alpha_s = rs - (rf + (rm - rf) * beta_s)
+
+    return alpha_s
 
 
 
 
-    # def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
-    #     # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
-    #
-    #     returns_share = [float(item) for item in
-    #                      self.returns(lst_hist_prices_share)]
-    #     rs = self.annualise(self.average(returns_share))
-    #
-    #     returns_market = [float(item) for item in
-    #                       self.returns(lst_hist_prices_market)]
-    #     rm = self.annualise(self.average(returns_market))
-    #
-    #     beta_s = self.beta(lst_hist_prices_share, lst_hist_prices_market)
-    #
-    #     alpha_s = rs - (rf + (rm - rf) * beta_s)
-    #
-    #     return alpha_s
+
     #
     # def erb(self, lst_share_prices, lst_market_prices, rf):
     #     # ERB --> Treynor ratio = (Rs – Rf) ÷ β

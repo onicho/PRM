@@ -258,7 +258,6 @@ class TestAnnualise(TestCase):
 
 
 class TestCorrelate(TestCase):
-
     def test_correlate(self):
         """
 
@@ -287,7 +286,6 @@ class TestCorrelate(TestCase):
         # Result produced by a scientific calculator = 0.3102978150
         npt.assert_almost_equal(correlation(sharelist)[1][0], 0.3102978150)
 
-
     def test_correlate_values(self):
         """
 
@@ -315,14 +313,62 @@ class TestCorrelate(TestCase):
         """
         # instantiating a Share objects with prices
         s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
-        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
-        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
-        s5 = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-
         sharelist = [returns(s1.prices)]
 
         self.assertEquals(correlation(sharelist), None)
 
+
+class TestBeta(TestCase):
+
+    def test_beta(self):
+        """
+
+        :return:
+        """
+        # instantiating Share objects with prices
+        s = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # Result produced by Excel's slope function = 0.4177679640016210
+        # Result produced by a scientific calculator = 0.41776796400162000
+        npt.assert_almost_equal(beta(s, m), 0.4177679640016, 2)
+
+    def test_beta1(self):
+        """
+
+        :return:
+        """
+        # instantiating Share objects with prices
+        s = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # Result produced by Excel's slope function = 0.627308583277
+        # Result produced by a scientific calculator = 0.0.627308583277
+        npt.assert_almost_equal(beta(s, m), 0.627308583277, 2)
+
+    def test_beta2(self):
+        """
+
+        :return:
+        """
+        # instantiating Share objects with prices
+        s = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # Result produced by Excel's slope function = 0.8166701
+        # Result produced by a scientific calculator = 0.816670132347
+
+        npt.assert_almost_equal(beta(s, m), 0.8166701, 2)
+
+    def test_beta_type(self):
+        """
+
+        :return:
+        """
+        # instantiating Share objects with prices
+        s = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        self.assertTrue(type(beta(s, m)), float)
 
 
