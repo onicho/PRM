@@ -308,5 +308,21 @@ class TestCorrelate(TestCase):
 
         self.assertTrue(my_hypot)
 
+    def test_correlate_noreturn(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        sharelist = [returns(s1.prices)]
+
+        self.assertEquals(correlation(sharelist), None)
+
 
 

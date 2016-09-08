@@ -138,43 +138,44 @@ def correlation(prices):
                   "num": len(prices)})
 
 
+def beta(prices, mkt):
+    r"""
+    Calculates Beta of a stock
 
-            # lists_of_prices_to_correlate = []
-            #
-            # if len(shares) > 1:
-            #
-            #     for share in shares:
-            #         lists_of_prices_to_correlate.append(
-            #             share.get_historical_prices())
-            #     correlations = np.corrcoef(lists_of_prices_to_correlate)
-            #     return correlations
-            #
-            # else:
-            #     print("Insufficient number of shares to perform correlation " +
-            #           " (minimum 2 required, but %(num)d were provided)" % {
-            #               "num": len(shares)})
-            #
+    Calculation of beta through regression, i.e. the covariance of the two
+    arrays (each contains rates of return for a share) divided by the variance
+    of the array of the market index returns. The formula is:
 
+    Beta  =  Covariance (ri,rm )/Variance of Market , where
+    ri = returns on share
+    rm = returns on market index
 
+    Parameters
+    ----------
+    :param prices: historical share prices for a period
+    :param mkt: historical market prices for a period
+    :type prices: list[float]
+    :type mkt: list[float]
+    :return: float
+    """
+    # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
 
+    share = [rate for rate in returns(prices)]
+    market = [rate for rate in returns(mkt)]
 
+    b = (
+            np.cov(share, market, ddof=0)[0][1]) /\
+        (np.var(market))
 
-
-
-
-                # def beta(self, lst_share_prices, lst_market_prices):
-    #     # cov(x,y)/ var(y)
-    #     # ddof=0`` provides a maximum likelihood estimate of the variance for normally distributed variables(ref!!!)
+    return beta_result
     #
-    #     returns_share = [float(item) for item in self.returns(lst_share_prices)]
-    #     returns_market = [float(item) for item in
-    #                       self.returns(lst_market_prices)]
-    #
-    #     beta_result = float((cov(returns_share, returns_market, ddof=0)[0][1]) /
-    #                         (var(returns_market)))
-    #
-    #     return beta_result
-    #
+
+
+
+
+
+
+
     # def alpha(self, lst_hist_prices_share, lst_hist_prices_market, rf):
     #     # Alpha %  --> α = Rs – [Rf + (Rm – Rf) β]
     #
