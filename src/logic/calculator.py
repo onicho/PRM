@@ -17,8 +17,7 @@ def average(nums):
     ----------
     :param nums: return values for a share for a period of time
     :type nums: list[float]
-    :returns: float, the average (mean) value of a list of prices or
-    share returns
+    :returns: float
     """
     avg = np.average(nums)
     return avg
@@ -36,47 +35,80 @@ def returns(prices):
     Pt is a final price
     Pt-1 is an original price
 
-    Iterating through the prices in a given list a return is calculated for
-    every single period.
+    Iterating through the prices in a given list a rate of return is calculated
+    for every single period.
 
-       Parameters
-       ----------
-       :param nums: return values for a share for a period of time
-       :type nums: list[float]
-       :returns: float, the average (mean) value of a list of prices or
-       share returns
-       """
-    rs_result = []
+    Parameters
+    ----------
+    :param prices: historical share prices for a certain period of time
+    :type prices: list[float]
+    :returns: list[float]
+
+    :Example:
+
+    list of share prices [1, 1.2, 0.9]
+    returned list [0.2, -0.25]
+
+    """
+    result = []
     position = 0
 
-    while position < len(list_of_hist_prices) - 1:
+    while position < len(prices) - 1:
         r = float(
-            (list_of_hist_prices[position + 1] / list_of_hist_prices[
-                position]) - 1)
-        rs_result.append(r)
+            (prices[position + 1] / prices[position]) - 1
+        )
+        result.append(r)
         position += 1
 
-    return rs_result
+    return result
 
-    # def std(self, list_of_hist_prices):
-    #     # NB: stdev  == excel stdev.p!!! numpy gives you stdev.s!!
-    #
-    #     sd = statistics.stdev(
-    #         [float(item) for item in self.returns(list_of_hist_prices)])
-    #
-    #     return float(self.annualise(sd))
-    #
-    # @staticmethod
-    # def annualise(num):
-    #     r"""
-    #     Returns
-    #     -------
-    #     float: annualised (percent)
-    #     :param num:
-    #     :return:
-    #     """
-    #     annualised_num = num * 12 * 100
-    #     return annualised_num
+
+def stdvt(prices):
+    r"""
+    Calculates Standard Deviation of a list of data values
+
+    The primary use is to calculate Standard Deviation of returns
+    (rates of return)on a share's prices. The function accepts a list of
+    historical share prices, then calculates rates of return for every single
+    period and finally calculates std for the return values.
+
+    The statistics package method stdev is ised to calculate std. It corresponds
+    to Excel's stdev.p function, which calculates std for a population.
+
+    Parameters
+    ----------
+    :param prices: historical share prices for a period
+    :type prices: list[float]
+    :return: float
+    """
+    sd = statistics.stdev(
+        [item for item in returns(prices)])
+
+    return annualise(sd)
+
+
+def annualise(num):
+    r"""
+    Annualises a values per percentage.
+
+    Use cases: annualising the average monthly return on a share as percentage
+               annualising Standard Deviation of monthly returns as percentage
+
+    Returns
+    -------
+    float: annualised (percent)
+
+    Parameters
+    ---------
+    :param num: avg monthly return or standard deviation of a share's prices
+    :type num: float
+    :return: float
+    """
+    anld = float(num) * 12 * 100
+    return anld
+
+
+
     #
     # @staticmethod
     # def correlate(list_of_shares):
