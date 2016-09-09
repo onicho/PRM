@@ -304,12 +304,3 @@ def specific_risk(share, market):
     sr = trs - b * trm
     return sr
 
-
-
-
-s1 = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-
-
-
-print(specific_risk(s1, mkt))
