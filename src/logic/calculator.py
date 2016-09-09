@@ -83,8 +83,7 @@ def stdvt(prices):
     :type prices: list[float]
     :return: float
     """
-    sd = statistics.stdev(
-        [item for item in returns(prices)])
+    sd = statistics.stdev(prices)
 
     return annualise(sd)
 
@@ -199,6 +198,9 @@ def alpha(share, market, rf):
     :param share: object Share that represents a stock market share
     :param market: object Share that represents the stock market ticker FTSE100
     :param rf: risk free rate
+    :type share: Share
+    :type market: Share
+    :type rf: float
     :return: alpha value of a stock
     :rtype: float
     """
@@ -215,11 +217,6 @@ def alpha(share, market, rf):
 
     return float(av)
 
-s = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
-m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-
-print(alpha(s, m, 100000))
-
 
 def erb(share, market, rf):
     r"""
@@ -230,28 +227,64 @@ def erb(share, market, rf):
 
     Formula
     -------
+    erb = (r - rf) / Beta
 
-    :param share:
-    :param market:
-    :param rf:
-    :return:
+    r = the share's return
+    rf  = the risk-free rate of return
+    Beta = the security's Beta, i.e. price volatility relative to
+     the overall market
+
+    Parameters
+    ----------
+    :param share: object Share that represents a stock market share
+    :param market: object Share that represents the stock market ticker FTSE100
+    :param rf: risk free rate
+    :type share: Share
+    :type market: Share
+    :type rf: float
+    :return: erb value of a stock
+    :rtype: float
     """
-        # ERB --> Treynor ratio = (Rs – Rf) ÷ β
-    rs = self.annualise(
-            self.average(
-                [float(item) for item in self.returns(share)]))
 
-    erb_result = float(
-            (rs - rf) / self.beta(share, market))
+    rshare = [rate for rate in returns(share.prices)]
+    r = annualise(average(rshare))
 
-    return erb_result
+    result = (r - rf) / beta(share, market)
+
+    return result
 
 
+def total_risk(share):
+    r"""
+    Measures Total Risk of each stock.
 
-    #
-    # def t_risk(self, lst_hist_prices):
-    #     tr = pow(self.std(lst_hist_prices), 2)
-    #     return tr
+    Calculating the Total Risk by squaring annualised standard deviation of the
+    share's return rate values.
+    Formula
+    -------
+    tr = sd raised to the pow 2
+
+    Parameters
+    ----------
+    :param share: object Share that represents a stock market share
+    :type share: Share
+    :return: total risk measure of a stock (variance)
+    :rtype: float
+    """
+    sreturn = returns(share.prices)
+    tr = pow(stdvt(sreturn), 2)
+
+    return tr
+
+s1 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+
+
+print(total_risk(mkt))
+
+
+
     #
     # def s_risk(self, share_histprices, market_histprices):
     #

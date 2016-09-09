@@ -218,7 +218,7 @@ class TestCalculations(TestCase):
         s = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
 
         # variables for the test
-        prices = s.prices
+        prices = returns(s.prices)
         result = stdvt(prices)
 
         npt.assert_almost_equal(result, 75.350371, decimal=3)
@@ -381,7 +381,6 @@ class TestBeta(TestCase):
 
 
 class TestAlpha(TestCase):
-
     def test_alpha(self):
         """
 
@@ -433,3 +432,95 @@ class TestAlpha(TestCase):
         rf = 1.5
 
         self.assertFalse(alpha(mkt, mkt, rf) == 0)
+
+
+class TestErb(TestCase):
+    def test_erb(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+
+        # Result produced by Excel = 46.477516946807484
+        # Result produced by a scientific calculator = 46.550222295
+
+        npt.assert_almost_equal(erb(s1, mkt, rf), 46.477516946807484, 1)
+
+        # Result produced by Excel = 5.95239832333
+        # Result produced by a scientific calculator = 5.9705760
+        npt.assert_almost_equal(erb(s2, mkt, rf), 5.95239832333, 1)
+
+        # Result produced by Excel = 34.31128049810
+        # Result produced by a scientific calculator = 34.31128
+        npt.assert_almost_equal(erb(s3, mkt, rf), 34.31128049810219, 1)
+
+        # Result produced by Excel = 18.282891578920
+        # Result produced by a scientific calculator = 18.28289
+        npt.assert_almost_equal(erb(s4, mkt, rf), 18.282891578920, 1)
+
+        # Result produced by Excel = 7.184000740
+        # Result produced by a scientific calculator = 7.1809091
+        npt.assert_almost_equal(erb(mkt, mkt, rf), 7.184000740, 1)
+
+    def test_erb_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+
+        self.assertTrue(type(erb(s1, mkt, rf)), float)
+
+
+class TestTotalRisk(TestCase):
+
+    def test_total_risk(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # Result produced by Excel = 11953.4398822
+        # Result produced by a scientific calculator = 11953.43989
+        npt.assert_almost_equal(total_risk(s1), 11953.4398822, 1)
+
+        # Result produced by Excel = 6309.56183350
+        # Result produced by a scientific calculator = 6309.56183
+        npt.assert_almost_equal(total_risk(s2), 6309.56183350, 1)
+
+        # Result produced by Excel = 5677.743650
+        # Result produced by a scientific calculator = 5677.67844
+        npt.assert_almost_equal(total_risk(s3), 5677.7436500, 1)
+
+        # Result produced by Excel = 2915.4816440
+        # Result produced by a scientific calculator = 2915.62032
+        npt.assert_almost_equal(total_risk(s4), 2915.4816440, 1)
+
+        # Result produced by Excel = 2198.494453394
+        # Result produced by a scientific calculator = 2205.9970
+        npt.assert_almost_equal(total_risk(mkt), 2198.494453394, 1)
+
+    def test_total_risk_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        self.assertTrue(type(total_risk(s1)), float)
