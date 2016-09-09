@@ -85,6 +85,7 @@ def stdvt(prices):
     """
     sd = statistics.stdev(prices)
 
+    # returns already annualised stdvt value
     return annualise(sd)
 
 
@@ -214,7 +215,6 @@ def alpha(share, market, rf):
     b = beta(share, market)
 
     av = r - (rf + (rm - rf) * b)
-
     return float(av)
 
 
@@ -262,13 +262,13 @@ def total_risk(share):
     share's return rate values.
     Formula
     -------
-    tr = sd raised to the pow 2
+    tr = sd ^ 2 (std raised to the power of 2)
 
     Parameters
     ----------
     :param share: object Share that represents a stock market share
     :type share: Share
-    :return: total risk measure of a stock (variance)
+    :return: total risk measure of a stock (variance) as percent ^ 2
     :rtype: float
     """
     sreturn = returns(share.prices)
@@ -276,20 +276,40 @@ def total_risk(share):
 
     return tr
 
-s1 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+
+def specific_risk(share, market):
+    r"""
+    Specific Risk of a share (also known as unsystematic or diversifiable risk)
+
+    The calculation is derived from the Total Risk formula, which is the sum of
+    systematic and non-systematic risks.
+
+    Formula
+    -------
+    sr^2 = trs^2 - [Beta^2 * trm^2]
+    trs = total risk of a share
+    Beta  = beta of a share
+    trm = total risk of a market
+
+    Parameters
+    ----------
+    :param share:
+    :param market:
+    :return:
+    """
+    trs = total_risk(share)  # the value is already squared
+    b = pow(beta(share, market), 2)
+    trm = total_risk(market)  # the value is already squared
+
+    sr = trs - b * trm
+    return sr
+
+
+
+
+s1 = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 
 
 
-print(total_risk(mkt))
-
-
-
-    #
-    # def s_risk(self, share_histprices, market_histprices):
-    #
-    #     sr = float(self.t_risk(share_histprices) - (
-    #     pow(self.beta(share_histprices, market_histprices), 2) *
-    #     self.t_risk(market_histprices)))
-    #
-    #     return sr
+print(specific_risk(s1, mkt))

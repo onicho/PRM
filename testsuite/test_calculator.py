@@ -258,6 +258,7 @@ class TestAnnualise(TestCase):
 
 
 class TestCorrelate(TestCase):
+
     def test_correlate(self):
         """
 
@@ -319,6 +320,7 @@ class TestCorrelate(TestCase):
 
 
 class TestBeta(TestCase):
+
     def test_beta(self):
         """
 
@@ -381,6 +383,7 @@ class TestBeta(TestCase):
 
 
 class TestAlpha(TestCase):
+
     def test_alpha(self):
         """
 
@@ -483,7 +486,6 @@ class TestErb(TestCase):
 
 
 class TestTotalRisk(TestCase):
-
     def test_total_risk(self):
         """
 
@@ -524,3 +526,50 @@ class TestTotalRisk(TestCase):
         # instantiating a Share objects with prices
         s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
         self.assertTrue(type(total_risk(s1)), float)
+
+
+class TestSpecificRisk(TestCase):
+
+    def test_specific_risk(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+
+        # Result produced by Excel = 11085.58818574
+        # Result produced by a scientific calculator = 11085.3446570
+        npt.assert_almost_equal(specific_risk(s1, mkt), 11085.58818574, 1)
+
+        # Result produced by Excel = 5184.4459091
+        # Result produced by a scientific calculator = 5182.40429337
+        npt.assert_almost_equal(specific_risk(s3, mkt), 5184.4459090, 1)
+
+        # Result produced by Excel = 2528.7129779
+        # Result produced by a scientific calculator = 2530.60751
+        npt.assert_almost_equal(specific_risk(s4, mkt), 2528.7129779, 1)
+
+    def test_specific_risk_mkt(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        self.assertAlmostEqual(specific_risk(mkt, mkt), 0)
+
+    def test_specific_risk_type(self):
+        """
+
+        :return:
+        """
+        # instantiating a Share objects with prices
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        self.assertTrue(type(specific_risk(mkt, mkt)) == float)
+
+
+
