@@ -27,15 +27,24 @@ class Portfolio(object):
         :type mkt: Share
         :type rfr: float
         """
-        self.candidates = shares
-        self.rfr = rfr
-        self.market = mkt
+        # checking that Portfolio is instantiated with correct arguments
+        if all(type(obj) == Share for obj in shares) and type(mkt) is Share and \
+                        type(rfr) is float:
+
+            self.candidates = shares
+            self.rfr = rfr
+            self.market = mkt
+
+        else:
+            raise TypeError("Check that the object Portfolio instantiated with "
+                            "the correct types of arguments")
 
     @property
     def shs_alphas(self):
         """
         Calculates alpha values for the shares in the portfolio. It applies
-        the alpha function to every Share object in the portfolio to get values.
+        the alpha function from the calculator module to every Share object in
+        the portfolio to get values.
         :return: alpha values for each share in the portfolio
         :rtype: list[float]
         """
@@ -47,8 +56,8 @@ class Portfolio(object):
     def shs_specrisk(self):
         r"""
         Calculates specific risk values for the shares in the portfolio. It
-        applies the specific_risk function to every Share object in the
-        portfolio to get values.
+        applies the specific_risk function from the calculator module to every
+        Share object in the portfolio to get values.
         :return: specific risk values for each share in the portfolio
         :rtype: list[float]
         """
@@ -57,26 +66,44 @@ class Portfolio(object):
         return srisk
 
     @property
-    def shares_betas(self):
-        betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
-                     self.candidate_shares]
+    def shs_betas(self):
+        r"""
+        Calculates beta values for the shares in the portfolio. It
+        applies the beta function from the calculator module to every Share
+        object in the portfolio to get values.
+        :return: specific risk values for each share in the portfolio
+        :rtype: list[float]
+        """
+        bts = [beta(share, self.market) for share in self.candidates]
 
-        return betas_lst
-    #
-    # def mkt_return(self):
-    #     retmkt = c.annualise(c.average(c.returns(self.mkt_ticker.historical_prices)))
-    #     return retmkt
-    #
-    # def mkt_risk(self):
-    #     riskmkt = c.t_risk(self.mkt_ticker.historical_prices)
-    #     return riskmkt
+        return bts
 
-    # def unadjusted_weights(self):
-    #     pass
-    #
-    # def adjusted_weights(self):
-    #     pass
+    @property
+    def mkt_return(self):
+        r"""
+        Calculates the return of the market (e.g. FTSE100) where the portfolio
+        shares are traded. The system is set to process monthly clothing prices
+        for the shares, so the return rate values get averaged and annualised by
+        using respective calculator functions.
+        :return: annualised return rate for the market for a specific period
+        :rtype: float
+        """
+        retmkt = annualise(np.average(
+                                      returns(self.market.prices)
+                                     ))
+        return retmkt
 
+    @property
+    def mkt_risk(self):
+        r"""
+        Calculates the total risk the market (e.g. FTSE100) where the portfolio
+        shares are traded. The total risk calculator function is used.
+        :return: total risk of the market for a specific period
+        :rtype: float
+        """
+        mrisk = total_risk(self.market)
+
+        return mrisk
 
 
 s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
@@ -86,9 +113,9 @@ s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
 shares = [s1, s2, s3, s4]
-p = Portfolio(shares, mkt, rf)
+#p = Portfolio(shares, mkt, "hi")
 
-print(p.shs_specrisk)
+#print(p)
 
 
 
@@ -97,6 +124,7 @@ print(p.shs_specrisk)
 # class WeightedPortfolio(Portfolio):
 #     # use abc.ABCMeta or whatever it is in Python 3.0
 #     @abstractmethod
+
 #     def unadjusted_weights(self):
 #         pass
 #
