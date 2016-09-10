@@ -3,6 +3,7 @@ This module contains classes that can be used to create Share objects
 """
 
 import pyodbc
+from logic.exceptions import *
 
 
 class Share(object):
@@ -15,8 +16,6 @@ class Share(object):
 
     def __init__(self, name):
         r"""
-        Constructs instance variables for class Share.
-
         Instance variables are the Share name and a list of historical share
         prices, where each price in the list is a Clothing price of a Share
         for a day, month or a year.
@@ -26,7 +25,7 @@ class Share(object):
         :param name: name of a share that corresponds to a market stock ticker
         :type name: str
 
-        :Example:
+        :Example input:
 
         'RBS' or 'BP' or 'TSCO'
         """
@@ -74,28 +73,39 @@ class ShareFactory(object):
         ticker can be 'AML', 'NG' or any other epic code of FTSE100 shares
         ..note:: start and end dates must be in the 'yyyy-mm-dd' format
         """
-        try:
-
-            s = Share(ticker)
-            # connection with the PRM database is established
-            cnxn = pyodbc.connect(
+        # connection with the PRM database is established
+        cnxn = pyodbc.connect(
                 'driver={SQL Server};server=localhost;database=PRM;Integrated '
                 'Security=True'
             )
-            cursor = cnxn.cursor()
+        cursor = cnxn.cursor()
+
+        db_tickers = [ticker[0] for ticker in
+                      cursor.execute(
+                          "SELECT distinct epic FROM [dbo].[SHARE]").
+                          fetchall()
+                      ]
+
+        if ticker in db_tickers:
+
+            s = Share(ticker)
+
             cursor.execute(
                 "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
                 "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
                 start_date + "' and '" + end_date + "')"
-                "order by CALENDAR_DATE asc "
+                                                    "order by CALENDAR_DATE asc"
             )
-            # a list of historical share prices is created
             share_prices = [float(p[0]) for p in cursor.fetchall()]
-            # the list of prices is assigned to the Share object
-            s.prices = share_prices
 
+            s.prices = share_prices
             return s
 
-        except TypeError:
-            print("Check that all parameters are strings and are in the "
-                  "correct format.")
+        else:
+
+            raise InputError("def create(ticker, start_date, end_date",
+                             "ticker " + ticker + " is not in database")
+
+
+
+

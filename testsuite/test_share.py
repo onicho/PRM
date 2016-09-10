@@ -1,5 +1,7 @@
 from unittest import TestCase
 from logic.share import *
+import numpy.testing as npt
+from logic.exceptions import *
 
 
 class TestShare(TestCase):
@@ -12,7 +14,7 @@ class TestShare(TestCase):
         self.assertEqual(s.name, "BP")
 
     def test_name_fails(self):
-        s = Share("BP")
+        s = Share(999)   # assert_raises in numpy.testing
         self.assertFalse(s.name == "LLOY")
 
     def test_prices(self):
@@ -35,12 +37,14 @@ class TestShare(TestCase):
         """Tests that two Share objects even with the same name are not
         equal
         """
+        # look up __eq__  and __hash__
         s = Share("BP")
         s1 = Share("BP")
         self.assertNotEqual(s, s1)
 
 
 class TestShareFactory(TestCase):
+
     def test_create_success(self):
         """Tests that a new Share object called 'NG' is created and that Share's
         assigned prices are equal to the list of historica prices copied from
@@ -81,16 +85,6 @@ class TestShareFactory(TestCase):
         factory = ShareFactory.create("TSCO", "2009-01-01", "2014-01-05")
         self.assertEqual(type(factory), Share)
 
-    def test_create_fail(self):
-        """
-        Tests that even if a new object Share is created with an invalid name, no
-        prices are assigned to the Share object because the database cannot
-        retrieve historical prices for invalid share name.
-        """
-        factory = ShareFactory.create("", "2009-01-01", "2014-01-05")
-        self.assertEqual(factory.name, "")
-        self.assertFalse(len(factory.prices) > 0)
-
     def test_create2(self):
         """Tests that a new Share object called '^FTSE' is created and that Share's
         assigned prices are equal to the list of historica prices copied from
@@ -110,9 +104,10 @@ class TestShareFactory(TestCase):
         self.assertEqual(factory.prices, p)
 
     def test_create_error(self):
-        """Tests that an error is raised when the wrong type parameters are
+        r"""Tests that an error is raised when the wrong type parameters are
         passed in.
         """
-        factory = ShareFactory.create("AML", 20160801, "2016-08-01")
+        factory = ShareFactory()
 
-        self.assertRaises(TypeError, factory)
+        self.assertRaises(InputError, factory.create, "hi",
+                          "2015-08-01", "2016-08-01")

@@ -7,23 +7,6 @@ import statistics
 from logic.share import *
 
 
-def average(nums):
-    r"""
-    Calculates the average of the numbers in a list
-
-    The primary use is to calculate the average of historical prices for a share
-    or the average return on a share for a defined period of time.
-
-    Parameters
-    ----------
-    :param nums: return values for a share for a period of time
-    :type nums: list[float]
-    :returns: float
-    """
-    avg = np.average(nums)
-    return avg
-
-
 def returns(prices):
     r"""
     Calculates returns on share's prices
@@ -207,10 +190,10 @@ def alpha(share, market, rf):
     """
 
     rshare = [rate for rate in returns(share.prices)]
-    r = annualise(average(rshare))
+    r = annualise(np.average(rshare))
 
     rmarket = [rate for rate in returns(market.prices)]
-    rm = annualise(average(rmarket))
+    rm = annualise(np.average(rmarket))
 
     b = beta(share, market)
 
@@ -247,7 +230,7 @@ def erb(share, market, rf):
     """
 
     rshare = [rate for rate in returns(share.prices)]
-    r = annualise(average(rshare))
+    r = annualise(np.average(rshare))
 
     result = (r - rf) / beta(share, market)
 

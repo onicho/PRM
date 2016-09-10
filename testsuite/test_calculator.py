@@ -156,17 +156,18 @@ returns_test = [
 
 
 class TestCalculations(TestCase):
-    def test_average(self):
-        """Tests that the average value of a list of values is returned
-        :return: float
-        """
-        nums = [1, 2, 3, 4, 5, 6, 0, 5, 78, 9]
-        nums1 = test
-        nums3 = [10, 15, 100, 11]
 
-        self.assertEqual(average(nums), 11.3)
-        self.assertAlmostEqual(average(nums1), 748.325694444444)
-        self.assertNotEqual(average(nums3), 3.5)
+    # def test_average(self):
+    #     """Tests that the average value of a list of values is returned
+    #     :return: float
+    #     """
+    #     nums = [1, 2, 3, 4, 5, 6, 0, 5, 78, 9]
+    #     nums1 = test
+    #     nums3 = [10, 15, 100, 11]
+    #
+    #     self.assertEqual(average(nums), 11.3)
+    #     self.assertAlmostEqual(average(nums1), 748.325694444444)
+    #     self.assertNotEqual(average(nums3), 3.5)
 
     def test_returns(self):
         """
@@ -360,7 +361,7 @@ class TestBeta(TestCase):
         # Result produced by a scientific calculator = 0.816670132347
         npt.assert_almost_equal(beta(s, m), 0.8166701, 2)
 
-    def test_beta_maket(self):
+    def test_beta_market(self):
         """
 
         :return:
@@ -397,7 +398,7 @@ class TestAlpha(TestCase):
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
 
-        # Result produced by Excel = 24.69476867
+        # Result produced by Excel = 24.69476867   cell A5 in
         # Result produced by a scientific calculator = 24.6947686724029
         npt.assert_almost_equal(alpha(s1, mkt, rf), 24.6947686724029, 1)
 
@@ -438,6 +439,7 @@ class TestAlpha(TestCase):
 
 
 class TestErb(TestCase):
+
     def test_erb(self):
         """
 
