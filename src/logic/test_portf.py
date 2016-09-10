@@ -10,44 +10,53 @@ from logic.share import Share
 class Portfolio(object):
     r"""
     It is a base class for a portfolio object, which can be implemented.
-
-    The class encapsulates portfolio information, specifically which shares the
-    portfolio consists of, the stock exchange market where these shares are
-    traded (also acts as a benchmark) and the risk free rate for the portfolio.
     """
     def __init__(self, shares, mkt, rfr):
         r"""
+        The class encapsulates portfolio information, specifically which shares
+        the portfolio consists of, the stock exchange market where these shares
+        are traded (also acts as a benchmark) and the risk free rate for the
+        portfolio.
 
-
-
-        Instance variables are the Share name and a list of historical share
-            prices, where each price in the list is a Clothing price of a Share
-            for a day, month or a year.
-
-            Parameters
-            ----------
-            :param name: name of a share that corresponds to a market stock ticker
-            :type name: str
-
-            :Example input:
-
-            'RBS' or 'BP' or 'TSCO'
-            """
-
+        Parameters
+        ----------
+        :param shares: Share objects passed to the class to form a portfolio
+        :param mkt: the market ticker (index), e.g. FTSE100
+        :param rfr: the risk free rate of the portfolio
+        :type shares: list[Share]
+        :type mkt: Share
+        :type rfr: float
+        """
         self.candidates = shares
         self.rfr = rfr
         self.market = mkt
 
     @property
-    def shares_alphas(self):
-        alphas_lst = [
-            alpha(
-                share.historical_prices, self.market.historical_prices,
-                self.rfr
-            )
-            for share in self.candidates
-        ]
-        return alphas_lst
+    def shs_alphas(self):
+        """
+        Calculates alpha values for the shares in the portfolio. It applies
+        the alpha function to every Share object in the portfolio to get values.
+        :return: alpha values for each share in the portfolio
+        :rtype: list[float]
+        """
+        alf = [alpha(share, self.market, self.rfr) for share in self.candidates]
+
+        return alf
+
+s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+rf = 1.5
+shares = [s1, s2, s3, s4]
+p = Portfolio(shares, mkt, rf)
+
+print(p.shs_alphas)
+
+
+
+
 
     # p = Portfolio(shares)
     # alpha = p.alpha
