@@ -76,8 +76,8 @@ class ShareFactory(object):
         try:
             # connection with the PRM database is established
             cnxn = pyodbc.connect(
-                    'driver={SQL Server};server=localhost;database=PRM;Integrated '
-                    'Security=True'
+                    'driver={SQL Server};server=localhost;database=PRM;'
+                    'Integrated Security=True'
                 )
             cursor = cnxn.cursor()
 
@@ -92,10 +92,11 @@ class ShareFactory(object):
                 s = Share(ticker)
 
                 cursor.execute(
-                    "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
-                    "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
-                    start_date + "' and '" + end_date + "')"
-                                                        "order by CALENDAR_DATE asc"
+                    "SELECT price "
+                    "FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
+                    "where epic = '" + ticker + "' and (CALENDAR_DATE between '"
+                    + start_date + "' and '" + end_date + "')"
+                                                    "order by CALENDAR_DATE asc"
                 )
                 share_prices = [float(p[0]) for p in cursor.fetchall()]
 
