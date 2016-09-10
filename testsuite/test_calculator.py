@@ -304,9 +304,7 @@ class TestCorrelate(TestCase):
                      returns(s4.prices), returns(s5.prices)]
 
         result = np.ravel(correlation(sharelist))
-        my_hypot = all(0 <= value <= 1 for value in result)
-
-        self.assertTrue(my_hypot)
+        self.assertTrue(all(0 <= value <= 1 for value in result))
 
     def test_correlate_noreturn(self):
         """

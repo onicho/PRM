@@ -43,34 +43,25 @@ class Portfolio(object):
 
         return alf
 
-s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
-s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
-s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
-mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-rf = 1.5
-shares = [s1, s2, s3, s4]
-p = Portfolio(shares, mkt, rf)
+    @property
+    def shs_specrisk(self):
+        r"""
+        Calculates specific risk values for the shares in the portfolio. It
+        applies the specific_risk function to every Share object in the
+        portfolio to get values.
+        :return: specific risk values for each share in the portfolio
+        :rtype: list[float]
+        """
+        srisk = [specific_risk(share, self.market) for share in self.candidates]
 
-print(p.shs_alphas)
+        return srisk
 
+    @property
+    def shares_betas(self):
+        betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+                     self.candidate_shares]
 
-
-
-
-    # p = Portfolio(shares)
-    # alpha = p.alpha
-
-    # def shares_specific_risk(self):
-    #     risk_nums = [c.s_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
-    #                  self.candidate_shares]
-    #     return risk_nums
-    #
-    # def shares_betas(self):
-    #     betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
-    #                  self.candidate_shares]
-    #
-    #     return betas_lst
+        return betas_lst
     #
     # def mkt_return(self):
     #     retmkt = c.annualise(c.average(c.returns(self.mkt_ticker.historical_prices)))
@@ -85,6 +76,21 @@ print(p.shs_alphas)
     #
     # def adjusted_weights(self):
     #     pass
+
+
+
+s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+rf = 1.5
+shares = [s1, s2, s3, s4]
+p = Portfolio(shares, mkt, rf)
+
+print(p.shs_specrisk)
+
+
 
 
 
