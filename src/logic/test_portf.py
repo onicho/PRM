@@ -2,7 +2,7 @@
 This module contains classes that can be used to create Portfolio objects, which
 represent a portfolio of stock market shares.
 """
-
+from abc import abstractmethod, ABCMeta
 from logic.calculator import *
 from logic.share import Share
 
@@ -106,6 +106,29 @@ class Portfolio(object):
         return mrisk
 
 
+class WeightedPortfolio(Portfolio):
+
+    __metaclass__ = ABCMeta
+
+    @abstractmethod
+    def unadjusted(self):
+        raise NotImplementedError
+
+    @abstractmethod
+    def adjusted(self):
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def adjusted_percent(self):
+        raise NotImplementedError
+        # percents = [round((i * 100), 2) for i in self.adjusted()]
+        # return percents
+
+    def shs_zip_props(self):
+        raise NotImplementedError
+
+
 s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
 s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
 s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
@@ -113,31 +136,13 @@ s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
 shares = [s1, s2, s3, s4]
-#p = Portfolio(shares, mkt, "hi")
 
-#print(p)
+p = WeightedPortfolio(shares,mkt, rf)
 
-
-
+print(p.adjusted())
 
 
-# class WeightedPortfolio(Portfolio):
-#     # use abc.ABCMeta or whatever it is in Python 3.0
-#     @abstractmethod
 
-#     def unadjusted_weights(self):
-#         pass
-#
-#     def adjusted_weights(self):
-#         pass
-#
-#     # @property : look it up
-#     def adj_weight_percent(self):
-#         weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
-#         return weights_percent
-#
-#     def zip_shares_proportions(self):
-#         pass
 #
 #
 # class EltonGruberPortfolio(WeightedPortfolio):
@@ -292,7 +297,7 @@ shares = [s1, s2, s3, s4]
 #     def __init__(self, lst_of_shares, market_ticker, rfr):
 #
 #         super().__init__(lst_of_shares, market_ticker, rfr)
-#         self.final_active_portfolio = []
+#         self.final_active_portfolio = {}
 #         self.active_proportion_tb = 0
 #         self.zip_shares_proportions()
 #         self.active_port()
