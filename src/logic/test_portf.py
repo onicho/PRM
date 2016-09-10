@@ -110,6 +110,10 @@ class WeightedPortfolio(Portfolio):
 
     __metaclass__ = ABCMeta
 
+    def __init__(self, shares, market, rfr):
+        super().__init__(shares, market, rfr)
+        self.final = {}
+
     @abstractmethod
     def unadjusted(self):
         raise NotImplementedError
@@ -118,7 +122,6 @@ class WeightedPortfolio(Portfolio):
     def adjusted(self):
         raise NotImplementedError
 
-    @property
     @abstractmethod
     def adjusted_percent(self):
         raise NotImplementedError
@@ -129,26 +132,12 @@ class WeightedPortfolio(Portfolio):
         raise NotImplementedError
 
 
-s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
-s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
-s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
-mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-rf = 1.5
-shares = [s1, s2, s3, s4]
 
-p = WeightedPortfolio(shares,mkt, rf)
-
-print(p.adjusted())
-
-
-
-#
-#
 # class EltonGruberPortfolio(WeightedPortfolio):
-#     def __init__(self, lst_of_shares, market_ticker, rfr):
 #
-#         super().__init__(lst_of_shares, market_ticker, rfr)
+#     def __init__(self, shares, market, rfr):
+#
+#         super().__init__(shares, market, rfr)
 #
 #         """
 #         self.candidate_shares = lst_of_shares
@@ -156,8 +145,8 @@ print(p.adjusted())
 #         self.mkt_ticker = market_ticker
 #
 #         """
-#         self.final_active_portfolio = {}
-#         self.zip_shares_proportions()
+#        # self.final_active_portfolio = {}
+#         self.shs_zip_props()
 #
 #     def order_by_erb(self):
 #
@@ -250,7 +239,10 @@ print(p.adjusted())
 #
 #         return filtered_shares
 #
-#     def unadjusted_weights(self):
+#
+#
+#
+#     def unadjusted(self):
 #
 #         rate = self.cut_off_rate()
 #         cof = list(rate.keys())[0]
@@ -270,9 +262,13 @@ print(p.adjusted())
 #
 #         return unadj_weights
 #
-#     def adjusted_weights(self):
 #
-#         weights = self.unadjusted_weights()
+#
+#
+#
+#     def adjusted(self):
+#
+#         weights = self.unadjusted()
 #         sum_of_weights = sum(weights)
 #
 #         norm_weights = []
@@ -282,15 +278,53 @@ print(p.adjusted())
 #
 #         return norm_weights
 #
-#     # def adj_weight_percent(self):
-#     #     weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
-#     #
-#     #     return weights_percent
 #
-#     def zip_shares_proportions(self):
+#
+#     def adjusted_percent(self):
+#         weights_percent = [round((i * 100), 2) for i in self.adjusted()]
+#
+#         return weights_percent
+#
+#
+#
+#     def shs_zip_props(self):
 #         shares = self.shares_filter()
-#         weights = self.adj_weight_percent()
-#         self.final_active_portfolio = dict(zip(map(Share, shares), weights))
+#         weights = self.adjusted_percent()
+#         self.final = dict(zip(map(Share, shares), weights))
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+rf = 1.5
+shares = [s1, s2, s3, s4]
+
+p = WeightedPortfolio(shares,mkt, rf)
+
+print(p.final)
+
+#print(p.adjusted())
+
+
+
+
+
+
+
+
 #
 #
 # class TreynorBlackPortfolio(Portfolio):
