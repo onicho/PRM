@@ -1,6 +1,6 @@
 from unittest import TestCase
 from logic.test_portf import *
-import numpy.testing as npt
+
 
 
 class TestPortfolio(TestCase):
