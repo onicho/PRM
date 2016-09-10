@@ -1,46 +1,75 @@
+"""
+This module contains classes that can be used to create Portfolio objects, which
+represent a portfolio of stock market shares.
+"""
+
 from logic.calculator import *
 from logic.share import Share
 
 
 class Portfolio(object):
+    r"""
+    It is a base class for a portfolio object, which can be implemented.
 
-    def __init__(self, lst_of_shares, market_ticker, rfr):
-        self.candidate_shares = lst_of_shares
-        self.risk_free_rate = rfr
-        self.mkt_ticker = market_ticker
+    The class encapsulates portfolio information, specifically which shares the
+    portfolio consists of, the stock exchange market where these shares are
+    traded (also acts as a benchmark) and the risk free rate for the portfolio.
+    """
+    def __init__(self, shares, mkt, rfr):
+        r"""
+
+
+
+        Instance variables are the Share name and a list of historical share
+            prices, where each price in the list is a Clothing price of a Share
+            for a day, month or a year.
+
+            Parameters
+            ----------
+            :param name: name of a share that corresponds to a market stock ticker
+            :type name: str
+
+            :Example input:
+
+            'RBS' or 'BP' or 'TSCO'
+            """
+
+        self.candidates = shares
+        self.rfr = rfr
+        self.market = mkt
 
     @property
     def shares_alphas(self):
         alphas_lst = [
-            c.alpha(
-                share.historical_prices, self.mkt_ticker.historical_prices,
-                self.risk_free_rate
+            alpha(
+                share.historical_prices, self.market.historical_prices,
+                self.rfr
             )
-            for share in self.candidate_shares
+            for share in self.candidates
         ]
         return alphas_lst
 
     # p = Portfolio(shares)
     # alpha = p.alpha
 
-    def shares_specific_risk(self):
-        risk_nums = [c.s_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
-                     self.candidate_shares]
-        return risk_nums
-
-    def shares_betas(self):
-        betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
-                     self.candidate_shares]
-
-        return betas_lst
-
-    def mkt_return(self):
-        retmkt = c.annualise(c.average(c.returns(self.mkt_ticker.historical_prices)))
-        return retmkt
-
-    def mkt_risk(self):
-        riskmkt = c.t_risk(self.mkt_ticker.historical_prices)
-        return riskmkt
+    # def shares_specific_risk(self):
+    #     risk_nums = [c.s_risk(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+    #                  self.candidate_shares]
+    #     return risk_nums
+    #
+    # def shares_betas(self):
+    #     betas_lst = [c.beta(share.historical_prices, self.mkt_ticker.historical_prices) for share in
+    #                  self.candidate_shares]
+    #
+    #     return betas_lst
+    #
+    # def mkt_return(self):
+    #     retmkt = c.annualise(c.average(c.returns(self.mkt_ticker.historical_prices)))
+    #     return retmkt
+    #
+    # def mkt_risk(self):
+    #     riskmkt = c.t_risk(self.mkt_ticker.historical_prices)
+    #     return riskmkt
 
     # def unadjusted_weights(self):
     #     pass

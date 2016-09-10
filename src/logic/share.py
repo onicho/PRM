@@ -73,38 +73,41 @@ class ShareFactory(object):
         ticker can be 'AML', 'NG' or any other epic code of FTSE100 shares
         ..note:: start and end dates must be in the 'yyyy-mm-dd' format
         """
-        # connection with the PRM database is established
-        cnxn = pyodbc.connect(
-                'driver={SQL Server};server=localhost;database=PRM;Integrated '
-                'Security=True'
-            )
-        cursor = cnxn.cursor()
+        try:
+            # connection with the PRM database is established
+            cnxn = pyodbc.connect(
+                    'driver={SQL Server};server=localhost;database=PRM;Integrated '
+                    'Security=True'
+                )
+            cursor = cnxn.cursor()
 
-        db_tickers = [ticker[0] for ticker in
-                      cursor.execute(
-                          "SELECT distinct epic FROM [dbo].[SHARE]").
-                          fetchall()
-                      ]
+            db_tickers = [ticker[0] for ticker in
+                          cursor.execute(
+                              "SELECT distinct epic FROM [dbo].[SHARE]").
+                              fetchall()
+                          ]
 
-        if ticker in db_tickers:
+            if ticker in db_tickers:
 
-            s = Share(ticker)
+                s = Share(ticker)
 
-            cursor.execute(
-                "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
-                "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
-                start_date + "' and '" + end_date + "')"
-                                                    "order by CALENDAR_DATE asc"
-            )
-            share_prices = [float(p[0]) for p in cursor.fetchall()]
+                cursor.execute(
+                    "SELECT price FROM [dbo].[vw_LastDayOfMonthPricesWithStringDate]"
+                    "where epic = '" + ticker + "' and (CALENDAR_DATE between '" +
+                    start_date + "' and '" + end_date + "')"
+                                                        "order by CALENDAR_DATE asc"
+                )
+                share_prices = [float(p[0]) for p in cursor.fetchall()]
 
-            s.prices = share_prices
-            return s
+                s.prices = share_prices
+                return s
 
-        else:
+            else:
+                raise InputError("def create(ticker, start_date, end_date",
+                                 "ticker " + ticker + " is not in database")
 
-            raise InputError("def create(ticker, start_date, end_date",
-                             "ticker " + ticker + " is not in database")
+        except TypeError:
+            raise TypeError("Your input type is incorrect, must be str")
 
 
 

@@ -111,3 +111,7 @@ class TestShareFactory(TestCase):
 
         self.assertRaises(InputError, factory.create, "hi",
                           "2015-08-01", "2016-08-01")
+
+        self.assertRaises(TypeError, factory.create, 99,
+                          "2015-08-01", "2016-08-01")
+
