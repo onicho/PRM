@@ -162,167 +162,167 @@ class EltonGruberPortfolio(WeightedPortfolio):
         :type rfr: float
         """
         super().__init__(shares, market, rfr)
-        self.shs_zip_props()
-
-
-# START HERE!
-    def ordered(self):
-        """
-
-        :return:
-        """
-
-        erbs_shares = {}
-
-        for share in self.candidate_shares:
-            erbs_shares[c.erb(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)] = share
-
-        ordered_shares = [item[1] for item in sorted(erbs_shares.items(), reverse=True)]
-        return ordered_shares
-
-
-
-
-
-
-
-
-
-    def cut_off_rate(self):
-
-        index = 0
-        num_components = []
-        shares = self.ordered()
-
-        for item in shares:
-
-            while index <= shares.index(item):
-                # annualised(returns - rfr * beta / specific_risk)
-                rets = c.returns(...)
-                beta = c.beta(...)
-                risk = c.s_risk(...)
-                value = annualise(average(rets - rfr) * beta / risk)
-                num_components.append(
-                    float((c.annualise(
-                        c.average(
-                            c.returns(shares[index].historical_prices)))) - self.risk_free_rate) * \
-                    float(c.beta(shares[index].historical_prices, self.mkt_ticker.historical_prices)) / \
-                    float(c.s_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
-                )
-                index += 1
-
-        count = 0
-        denom_components = []
-
-        for item in shares:
-
-            while count <= shares.index(item):
-                denom_components.append(
-                    float(pow(c.beta(shares[count].historical_prices, self.mkt_ticker.historical_prices), 2)) / \
-                    float(c.s_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
-                )
-                count += 1
-
-        co_rates = []
-
-        for share in shares:
-            n = len(shares) - (shares.index(share) + 1)
-
-            num_element = num_components[
-                          :-n or None]  # to remove the last N elements of a list.
-
-            den_element = denom_components[:-n or None]
-
-            var_mkt = c.t_risk(self.mkt_ticker.historical_prices)
-
-            cof = round(float((var_mkt * sum(num_element)) / \
-                              (1 + var_mkt * (sum(den_element)))), 2)
-
-            co_rates.append(cof)
-
-        erbs_shares = []
-
-        for one_share in shares:
-            erbs_shares.append(
-                c.erb(one_share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate))
-
-        cof_rate = {}
-        item_index = 0
-        found = False
-
-        while not found and item_index < len(co_rates):
-            if co_rates[item_index] <= erbs_shares[item_index + 1]:
-                item_index += 1
-            else:
-                cof_rate = {co_rates[item_index]: item_index}
-                found = True
-
-        return cof_rate  # co_rates, len(ordered_shares)
-
-    def shares_filter(self):
-
-        rate = self.cut_off_rate()
-        n = (list(rate.values()))[0] + 1
-
-        shares = self.ordered()
-        filtered_shares = shares[: n]
-
-        return filtered_shares
-
-
-
-
-    def unadjusted(self):
-
-        rate = self.cut_off_rate()
-        cof = list(rate.keys())[0]
-
-        unadj_weights = []
-        filtered_shares = self.shares_filter()
-
-        for item in filtered_shares:
-            w = (
-                float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
-                    item.historical_prices, self.mkt_ticker.historical_prices))) *
-
-                (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(
-                    cof))
-            )
-            unadj_weights.append(w)
-
-        return unadj_weights
-
-
-
-
-
-    def adjusted(self):
-
-        weights = self.unadjusted()
-        sum_of_weights = sum(weights)
-
-        norm_weights = []
-
-        for i in weights:
-            norm_weights.append(i / sum_of_weights)
-
-        return norm_weights
-
-
-
-    def adjusted_percent(self):
-        weights_percent = [round((i * 100), 2) for i in self.adjusted()]
-
-        return weights_percent
-
-
-
-    def shs_zip_props(self):
-        shares = self.shares_filter()
-        weights = self.adjusted_percent()
-        self.final = dict(zip(map(Share, shares), weights))
-
-
+        #self.shs_zip_props()
+
+
+# # START HERE!
+#     def ordered(self):
+#         """
+#
+#         :return:
+#         """
+#
+#         erbs_shares = {}
+#
+#         for share in self.candidate_shares:
+#             erbs_shares[c.erb(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)] = share
+#
+#         ordered_shares = [item[1] for item in sorted(erbs_shares.items(), reverse=True)]
+#         return ordered_shares
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#     def cut_off_rate(self):
+#
+#         index = 0
+#         num_components = []
+#         shares = self.ordered()
+#
+#         for item in shares:
+#
+#             while index <= shares.index(item):
+#                 # annualised(returns - rfr * beta / specific_risk)
+#                 rets = c.returns(...)
+#                 beta = c.beta(...)
+#                 risk = c.s_risk(...)
+#                 value = annualise(average(rets - rfr) * beta / risk)
+#                 num_components.append(
+#                     float((c.annualise(
+#                         c.average(
+#                             c.returns(shares[index].historical_prices)))) - self.risk_free_rate) * \
+#                     float(c.beta(shares[index].historical_prices, self.mkt_ticker.historical_prices)) / \
+#                     float(c.s_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
+#                 )
+#                 index += 1
+#
+#         count = 0
+#         denom_components = []
+#
+#         for item in shares:
+#
+#             while count <= shares.index(item):
+#                 denom_components.append(
+#                     float(pow(c.beta(shares[count].historical_prices, self.mkt_ticker.historical_prices), 2)) / \
+#                     float(c.s_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
+#                 )
+#                 count += 1
+#
+#         co_rates = []
+#
+#         for share in shares:
+#             n = len(shares) - (shares.index(share) + 1)
+#
+#             num_element = num_components[
+#                           :-n or None]  # to remove the last N elements of a list.
+#
+#             den_element = denom_components[:-n or None]
+#
+#             var_mkt = c.t_risk(self.mkt_ticker.historical_prices)
+#
+#             cof = round(float((var_mkt * sum(num_element)) / \
+#                               (1 + var_mkt * (sum(den_element)))), 2)
+#
+#             co_rates.append(cof)
+#
+#         erbs_shares = []
+#
+#         for one_share in shares:
+#             erbs_shares.append(
+#                 c.erb(one_share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate))
+#
+#         cof_rate = {}
+#         item_index = 0
+#         found = False
+#
+#         while not found and item_index < len(co_rates):
+#             if co_rates[item_index] <= erbs_shares[item_index + 1]:
+#                 item_index += 1
+#             else:
+#                 cof_rate = {co_rates[item_index]: item_index}
+#                 found = True
+#
+#         return cof_rate  # co_rates, len(ordered_shares)
+#
+#     def shares_filter(self):
+#
+#         rate = self.cut_off_rate()
+#         n = (list(rate.values()))[0] + 1
+#
+#         shares = self.ordered()
+#         filtered_shares = shares[: n]
+#
+#         return filtered_shares
+#
+#
+#
+#
+#     def unadjusted(self):
+#
+#         rate = self.cut_off_rate()
+#         cof = list(rate.keys())[0]
+#
+#         unadj_weights = []
+#         filtered_shares = self.shares_filter()
+#
+#         for item in filtered_shares:
+#             w = (
+#                 float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
+#                     item.historical_prices, self.mkt_ticker.historical_prices))) *
+#
+#                 (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(
+#                     cof))
+#             )
+#             unadj_weights.append(w)
+#
+#         return unadj_weights
+#
+#
+#
+#
+#
+#     def adjusted(self):
+#
+#         weights = self.unadjusted()
+#         sum_of_weights = sum(weights)
+#
+#         norm_weights = []
+#
+#         for i in weights:
+#             norm_weights.append(i / sum_of_weights)
+#
+#         return norm_weights
+#
+#
+#
+#     def adjusted_percent(self):
+#         weights_percent = [round((i * 100), 2) for i in self.adjusted()]
+#
+#         return weights_percent
+#
+#
+#
+#     def shs_zip_props(self):
+#         shares = self.shares_filter()
+#         weights = self.adjusted_percent()
+#         self.final = dict(zip(map(Share, shares), weights))
+#
+#
 
 
 
@@ -342,9 +342,9 @@ mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
 shares = [s1, s2, s3, s4]
 
-p = WeightedPortfolio(shares,mkt, rf)
+p = EltonGruberPortfolio(shares,mkt, rf)
 
-print(p.final)
+print(p.mkt_return)
 
 #print(p.adjusted())
 

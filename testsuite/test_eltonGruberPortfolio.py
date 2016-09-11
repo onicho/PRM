@@ -2,10 +2,7 @@ from unittest import TestCase
 from logic.test_portf import *
 
 
-class TestWeightedPortfolio(TestCase):
-    """
-
-    """
+class TestEltonGruberPortfolio(TestCase):
 
     s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
     s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
@@ -17,33 +14,14 @@ class TestWeightedPortfolio(TestCase):
 
     def test_class_inst(self):
 
-        p = WeightedPortfolio(shares, mkt, rf)
+        p = EltonGruberPortfolio(shares, mkt, rf)
         self.assertTrue(p.candidates == [s1, s2, s3, s4])
         self.assertTrue(len(shares) == len(p.candidates))
         self.assertTrue(type(p.rfr) == float)
-        self.assertIsInstance(p, WeightedPortfolio)
-        p_fail = WeightedPortfolio
+        self.assertIsInstance(p, EltonGruberPortfolio)
+        p_fail = EltonGruberPortfolio
         self.assertRaises(TypeError, p_fail, shares, mkt, "10")
         self.assertEqual(len(p.final), 0)
-
-    def test_unadjusted(self):
-
-        p = WeightedPortfolio(shares, mkt, rf)
-        self.assertRaises(NotImplementedError, p.unadjusted)
-
-    def test_adjusted(self):
-
-        p = WeightedPortfolio(shares, mkt, rf)
-        self.assertRaises(NotImplementedError, p.adjusted)
-
-    def test_shs_zip_props(self):
-
-        p = WeightedPortfolio(shares, mkt, rf)
-        self.assertRaises(NotImplementedError, p.shs_zip_props)
-
-    def test_adjusted_percent(self):
-        p = WeightedPortfolio(shares, mkt, rf)
-        self.assertRaises(NotImplementedError, p.adjusted_percent)
 
     def test_shs_alphas(self):
         """
@@ -57,7 +35,7 @@ class TestWeightedPortfolio(TestCase):
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
         shares = [s1, s2, s3, s4]
-        p = WeightedPortfolio(shares, mkt, rf)
+        p = EltonGruberPortfolio(shares, mkt, rf)
 
         self.assertEquals(len(p.shs_alphas), len(shares))
         self.assertTrue(all(type(value) == float for value in p.shs_alphas))
@@ -78,10 +56,11 @@ class TestWeightedPortfolio(TestCase):
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
         shares = [s1, s2, s3, s4]
-        p = WeightedPortfolio(shares, mkt, rf)
+        p = EltonGruberPortfolio(shares, mkt, rf)
 
         self.assertEquals(len(p.shs_specrisk), len(shares))
-        self.assertTrue(all(type(value) == float for value in p.shs_specrisk))
+        self.assertTrue(
+            all(type(value) == float for value in p.shs_specrisk))
         self.assertAlmostEqual(p.shs_specrisk[0], 11085.588185744395)
         self.assertAlmostEqual(p.shs_specrisk[1], 4852.190528206953)
         self.assertAlmostEqual(p.shs_specrisk[2], 5184.445909093038)
@@ -99,7 +78,7 @@ class TestWeightedPortfolio(TestCase):
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
         shares = [s1, s2, s3, s4]
-        p = WeightedPortfolio(shares, mkt, rf)
+        p = EltonGruberPortfolio(shares, mkt, rf)
 
         self.assertEquals(len(p.shs_betas), len(shares))
         self.assertTrue(all(type(value) == float for value in p.shs_betas))
@@ -120,9 +99,36 @@ class TestWeightedPortfolio(TestCase):
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
         shares = [s1, s2, s3, s4]
-        p = WeightedPortfolio(shares, mkt, rf)
+        p = EltonGruberPortfolio(shares, mkt, rf)
 
         self.assertEquals(p.mkt_return, 8.680909161455878)
         self.assertTrue(type(p.mkt_return) == float)
 
 
+
+
+
+
+
+
+
+            # def test_ordered(self):
+    #     self.fail()
+    #
+    # def test_cut_off_rate(self):
+    #     self.fail()
+    #
+    # def test_shares_filter(self):
+    #     self.fail()
+    #
+    # def test_unadjusted(self):
+    #     self.fail()
+    #
+    # def test_adjusted(self):
+    #     self.fail()
+    #
+    # def test_adjusted_percent(self):
+    #     self.fail()
+    #
+    # def test_shs_zip_props(self):
+    #     self.fail()
