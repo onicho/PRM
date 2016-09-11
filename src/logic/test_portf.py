@@ -120,9 +120,19 @@ class WeightedPortfolio(Portfolio):
     def unadjusted(self):
         raise NotImplementedError
 
-    @abc.abstractmethod
     def adjusted(self):
-        raise NotImplementedError
+        """
+        Calculates the normalised weights, i.e. proportion of portfolio invested
+        in i share of the portfolio. The sum of adjusted weights should add up
+        to 1.
+        prop  = wi / SUM[unadjusted weights]
+        :return: adjusted proportions of shares for the portfolio
+        :rtype: list[float]
+        """
+        weights = [abs(w) for w in self.unadjusted()]
+
+        adj = [(w/sum(weights))for w in weights]
+        return adj
 
     def adjusted_percent(self):
         percentage = [round((w * 100), 2) for w in self.adjusted()]
@@ -340,22 +350,6 @@ class EltonGruberPortfolio(WeightedPortfolio):
 
         return weights
 
-    def adjusted(self):
-        """
-        Calculates the normalised weights, i.e. proportion of portfolio invested
-        in i share of the portfolio. The sum of adjusted weights should add up
-        to 1.
-
-        prop  = wi / SUM[unadjusted weights]
-        :return: adjusted proportions of shares for the portfolio
-        :rtype: list[float]
-        """
-
-        weights = [abs(w) for w in self.unadjusted()]
-
-        adj = [(w/sum(weights))for w in weights]
-        return adj
-
     def shs_zip_props(self):
 
         s = self.filtered()
@@ -364,47 +358,89 @@ class EltonGruberPortfolio(WeightedPortfolio):
         self.final = dict(zip(map(Share, s), w))
 
 
-class TreynorBlackPortfolio(Portfolio):
+class TreynorBlackPortfolio(WeightedPortfolio):
+    """
+    A concrete class for a portfolio object, which constructs an active
+    portfolio of stock market shares by applying conthe Treynor-Black method of
+    an equity portfolio construction. This is a procedure for constructing a
+    portfolio of stocks identified to have non zero alpha.
+
+    This class inherits functionality of the WeightedPortfolio abstract class
+    and the latter is derived from the base class Portfolio.
+    """
 
     def __init__(self, shares, mkt, rfr):
-
+        """
+        The class encapsulates portfolio information, specifically:
+        *candidate shares passed to the class to form an active portfolio
+        *the stock exchange market (market ticker,e.g FTSE100)where these shares
+         are traded (it also acts as a benchmark for portfolio calculations)
+        *the risk free rate for the portfolio
+        *shares that form the final active portfolio and their proportions in it
+        Parameters
+        ----------
+        :param shares: Share objects passed to the class to form a portfolio
+        :param mkt: the market ticker (index), e.g. FTSE100
+        :param rfr: the risk free rate of the portfolio
+        :type shares: list[Share]
+        :type mkt: Share
+        :type rfr: float
+        """
         super().__init__(shares, mkt, rfr)
         self.active_proportion_tb = 0
 
         #self.active_port()
         #shs_zip_props(self)
 
+    @property
     def non_zero_alpha(self):
+        """
+        Checks that all candidate stocks have non zero alphas
+        :return: Boolean
+        """
         return all(alpha != 0 for alpha in self.shs_alphas)
 
-    # def unadjusted_weights(self):
-    #
-    #     alphas = self.shares_alphas()
-    #     non_zero = self.non_zero_alpha()
-    #     sp_risk = self.shares_specific_risk()
-    #
-    #     if non_zero:
-    #
-    #         index = 0
-    #         unadj_w = []
-    #
-    #         while index < len(alphas):
-    #             w = alphas[index] / sp_risk[index]
-    #             unadj_w.append(w)
-    #             index += 1
-    #         return unadj_w
-    #     else:
-    #         print("Some of the candidate securities' alphas are equal to zero.")
-    #
-    # def adjusted_weights(self):
-    #
-    #     weights = self.unadjusted_weights()
-    #     adj_w = [float(w / sum(weights)) for w in weights]
-    #     return adj_w
-    #
+    def unadjusted(self):
+        """
+        Calculates unadjusted (unnormalised) weights of shares in Treynor Black
+        Portfolio. The formula to find the weight w of a security i is:
+
+        wi = Ai / sri
+
+        Ai - is Alpha of a share i
+        sri - specific risk of a share i
+
+        :return: unadjusted proportions of shares for the portfolio
+        :rtype: list[float]
+        """
+        alf = self.shs_alphas
+        risk = self.shs_specrisk
+
+        if self.non_zero_alpha:  # if True
+            index = 0
+            nonadj = []
+
+            while index < len(alf):
+
+                w = alf[index] / risk[index]
+                nonadj.append(w)
+                index += 1
+
+            return nonadj
+
+        else:
+            print("Some of the candidate securities' alphas are equal to zero.")
+            return []
+
+
+
+
+
+
+
     # def adj_weight_percent(self):
     #
-    #     weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
+    #     weights_percent = [round((i * 100), 2) for i in self.adjusted()]
     #     return weights_percent
     #
     # def shs_zip_props(self):
@@ -414,7 +450,7 @@ class TreynorBlackPortfolio(Portfolio):
     #
     # def portfolio_alpha(self):
     #
-    #     weights = self.adjusted_weights()
+    #     weights = self.adjusted()
     #     alphas = self.shares_alphas()
     #
     #     if len(weights) == len(alphas):
@@ -430,7 +466,7 @@ class TreynorBlackPortfolio(Portfolio):
     # def portfolio_beta(self):
     #
     #     betas = self.shares_betas()
-    #     weights = self.adjusted_weights()
+    #     weights = self.adjusted()
     #
     #     if len(weights) == len(betas):
     #
@@ -445,7 +481,7 @@ class TreynorBlackPortfolio(Portfolio):
     # def portfolio_specific_risk(self):
     #
     #     sr_shares = self.shares_specific_risk()
-    #     weights = self.adjusted_weights()
+    #     weights = self.adjusted()
     #
     #     if len(weights) == len(sr_shares):
     #
@@ -470,18 +506,8 @@ class TreynorBlackPortfolio(Portfolio):
     #     w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
     #
     #     self.active_proportion_tb = w_tb
-
-
-
-
-
-
-
-
-
-
-
-
+    #
+    #
 
 
 
@@ -513,7 +539,7 @@ rf = 1.5
 
 shares = [s1,s2, s3, s4]
 
-shares1 = [s11,s12, s13, s14]
+shares1 = [s11,s13, s14]
 
 shares2 = [s5,s6, s7, s8]
 
@@ -528,7 +554,10 @@ print()
 #
 # print(p.filtered())
 #
-# print(p.unadjusted())
+print(p.unadjusted())
+print()
+print(p.adjusted())
+print(sum(p.adjusted()))
 #
 # print()
 #
