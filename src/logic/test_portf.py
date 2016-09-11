@@ -131,6 +131,7 @@ class WeightedPortfolio(Portfolio):
         # percents = [round((i * 100), 2) for i in self.adjusted()]
         # return percents
 
+    @abstractmethod
     def shs_zip_props(self):
         raise NotImplementedError
 
@@ -164,170 +165,204 @@ class EltonGruberPortfolio(WeightedPortfolio):
         super().__init__(shares, market, rfr)
         #self.shs_zip_props()
 
+    def order(self):
+        """
+        Ranks all shares according to their Excess Return on Beta. Every share
+        is ordered from highest to lowest erb. A list of ordered shares is
+        assigned to the class instance variable 'ordered'
+        :return: ordered shares with highest erb first and lowest erb last
+        :rtype: list[Share]
+        """
+        stocks = {}
 
-# # START HERE!
-#     def ordered(self):
-#         """
-#
-#         :return:
-#         """
-#
-#         erbs_shares = {}
-#
-#         for share in self.candidate_shares:
-#             erbs_shares[c.erb(share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)] = share
-#
-#         ordered_shares = [item[1] for item in sorted(erbs_shares.items(), reverse=True)]
-#         return ordered_shares
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#     def cut_off_rate(self):
-#
-#         index = 0
-#         num_components = []
-#         shares = self.ordered()
-#
-#         for item in shares:
-#
-#             while index <= shares.index(item):
-#                 # annualised(returns - rfr * beta / specific_risk)
-#                 rets = c.returns(...)
-#                 beta = c.beta(...)
-#                 risk = c.s_risk(...)
-#                 value = annualise(average(rets - rfr) * beta / risk)
-#                 num_components.append(
-#                     float((c.annualise(
-#                         c.average(
-#                             c.returns(shares[index].historical_prices)))) - self.risk_free_rate) * \
-#                     float(c.beta(shares[index].historical_prices, self.mkt_ticker.historical_prices)) / \
-#                     float(c.s_risk(shares[index].historical_prices, self.mkt_ticker.historical_prices))
-#                 )
-#                 index += 1
-#
-#         count = 0
-#         denom_components = []
-#
-#         for item in shares:
-#
-#             while count <= shares.index(item):
-#                 denom_components.append(
-#                     float(pow(c.beta(shares[count].historical_prices, self.mkt_ticker.historical_prices), 2)) / \
-#                     float(c.s_risk(shares[count].historical_prices, self.mkt_ticker.historical_prices))
-#                 )
-#                 count += 1
-#
-#         co_rates = []
-#
-#         for share in shares:
-#             n = len(shares) - (shares.index(share) + 1)
-#
-#             num_element = num_components[
-#                           :-n or None]  # to remove the last N elements of a list.
-#
-#             den_element = denom_components[:-n or None]
-#
-#             var_mkt = c.t_risk(self.mkt_ticker.historical_prices)
-#
-#             cof = round(float((var_mkt * sum(num_element)) / \
-#                               (1 + var_mkt * (sum(den_element)))), 2)
-#
-#             co_rates.append(cof)
-#
-#         erbs_shares = []
-#
-#         for one_share in shares:
-#             erbs_shares.append(
-#                 c.erb(one_share.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate))
-#
-#         cof_rate = {}
-#         item_index = 0
-#         found = False
-#
-#         while not found and item_index < len(co_rates):
-#             if co_rates[item_index] <= erbs_shares[item_index + 1]:
-#                 item_index += 1
-#             else:
-#                 cof_rate = {co_rates[item_index]: item_index}
-#                 found = True
-#
-#         return cof_rate  # co_rates, len(ordered_shares)
-#
-#     def shares_filter(self):
-#
-#         rate = self.cut_off_rate()
-#         n = (list(rate.values()))[0] + 1
-#
-#         shares = self.ordered()
-#         filtered_shares = shares[: n]
-#
-#         return filtered_shares
-#
-#
-#
-#
-#     def unadjusted(self):
-#
-#         rate = self.cut_off_rate()
-#         cof = list(rate.keys())[0]
-#
-#         unadj_weights = []
-#         filtered_shares = self.shares_filter()
-#
-#         for item in filtered_shares:
-#             w = (
-#                 float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
-#                     item.historical_prices, self.mkt_ticker.historical_prices))) *
-#
-#                 (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(
-#                     cof))
-#             )
-#             unadj_weights.append(w)
-#
-#         return unadj_weights
-#
-#
-#
-#
-#
-#     def adjusted(self):
-#
-#         weights = self.unadjusted()
-#         sum_of_weights = sum(weights)
-#
-#         norm_weights = []
-#
-#         for i in weights:
-#             norm_weights.append(i / sum_of_weights)
-#
-#         return norm_weights
-#
-#
-#
-#     def adjusted_percent(self):
-#         weights_percent = [round((i * 100), 2) for i in self.adjusted()]
-#
-#         return weights_percent
-#
-#
-#
-#     def shs_zip_props(self):
-#         shares = self.shares_filter()
-#         weights = self.adjusted_percent()
-#         self.final = dict(zip(map(Share, shares), weights))
-#
-#
+        for share in self.candidates:
+            stocks[erb(share, self.market, self.rfr)] = share
+
+        ordered = [item[1] for item in sorted(stocks.items(), reverse=True)]
+        return ordered
+
+    def cut_off_rate(self):
+        """
+        Calculates the unique cut-off rate c* for erb. All securities with erbs
+        greater than cut-off rate will be included in the portfolio, but all
+        securities with erbs less than cut-off rate will be excluded.
+        Cut-off rate Cj for portfolio containing first j securities is given by
+
+        Cj = trm * SUM[(ri - rf)Bi / sri] / 1 + trm * SUM[(Bi^2/sri)]
+
+         trm  - total risk of the market
+         ri - return on security i
+         rf - risk free rate
+         Bi - Beta of a security i
+         sri - specific risk of a security i
+
+         Steps
+         -----
+         1. The numerator has a constant element trm and a number of elements
+         that need to be summed up in the numerator. The number of elements
+         for each Cj varies, e.g C1 = 2 elem, C2 = 2 elem, etc. First step is to
+         calculate variable numerator elements , i.e. the element for each share
+
+         2. Find variable denominator elements (same principal as the
+         denominator calculation)
+
+         3. Calculate cut-off rates for shares
+
+         4. Compare cut-rates with erbs of ordered shares and identify the
+         unique cut off rate
+
+        :return:
+        :rtype:
+        """
+        stocks = self.order()
+
+        #  Step1: calculate variable numerator components for each share
+        numerator = []
+        idx = 0
+
+        for item in stocks:
+
+            while idx <= stocks.index(item):
+
+                r = returns(stocks[idx].prices)
+                rets = annualise(np.average(r)) - self.rfr
+                b = beta(stocks[idx], self.market)
+                sri = specific_risk(stocks[idx], self.market)
+
+                # (ri - rf) * Bi / sri
+                numerator.append(rets * b / sri)
+
+                idx += 1
+
+        # Step2:  calculate variable denominator components for each share
+        denominator = []
+        count = 0
+
+        for item in stocks:
+
+            while count <= stocks.index(item):
+
+                bb = pow(beta(stocks[count], self.market), 2)
+                sri = specific_risk(stocks[count], self.market)
+
+                #  bb / sri
+                denominator.append(bb / sri)
+
+                count += 1
+
+        # Step3:  calculate cut-off rates for each share
+        rates = []
+
+        for share in stocks:
+
+            n = len(stocks) - (stocks.index(share) + 1)
+
+            # to remove the last n elements of a list
+            num = numerator[:-n or None]
+            denom = denominator[:-n or None]
+
+            trm = total_risk(self.market)
+
+            #  Calculating Cj for each share
+            cj = (trm * sum(num)) / (1 + trm * sum(denom))
+
+            rates.append(cj)
+
+        # Step4:  compare rates with erbs of ordered shares and identify the
+        # unique cut-off rate
+
+        erbs = [erb(share, self.market, self.rfr) for share in stocks]
+
+        c = {}
+
+        index = 0
+        found = False
+
+        while not found:
+
+            if index + 1 == len(rates):
+                c = {rates[index]: index}
+                break
+
+            if rates[index] <= erbs[index + 1]:
+                    index += 1
+            else:
+                c = {rates[index]: index}
+                found = True
+
+        return c
 
 
-
-
-
+    #
+    # def shares_filter(self):
+    #
+    #     rate = self.cut_off_rate()
+    #     n = (list(rate.values()))[0] + 1
+    #
+    #     shares = self.order()
+    #     filtered_shares = shares[: n]
+    #
+    #     return filtered_shares
+    #
+    #
+    #
+    #
+    # def unadjusted(self):
+    #
+    #     rate = self.cut_off_rate()
+    #     cof = list(rate.keys())[0]
+    #
+    #     unadj_weights = []
+    #     filtered_shares = self.shares_filter()
+    #
+    #     for item in filtered_shares:
+    #         w = (
+    #             float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
+    #                 item.historical_prices, self.mkt_ticker.historical_prices))) *
+    #
+    #             (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(
+    #                 cof))
+    #         )
+    #         unadj_weights.append(w)
+    #
+    #     return unadj_weights
+    #
+    #
+    #
+    #
+    #
+    # def adjusted(self):
+    #
+    #     weights = self.unadjusted()
+    #     sum_of_weights = sum(weights)
+    #
+    #     norm_weights = []
+    #
+    #     for i in weights:
+    #         norm_weights.append(i / sum_of_weights)
+    #
+    #     return norm_weights
+    #
+    #
+    #
+    # def adjusted_percent(self):
+    #     weights_percent = [round((i * 100), 2) for i in self.adjusted()]
+    #
+    #     return weights_percent
+    #
+    #
+    #
+    # def shs_zip_props(self):
+    #     shares = self.shares_filter()
+    #     weights = self.adjusted_percent()
+    #     self.final = dict(zip(map(Share, shares), weights))
+    #
+    #
+    #
+    #
+    #
+    #
+    #
 
 
 
@@ -338,13 +373,14 @@ s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
 s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
 s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
 s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
-shares = [s1, s2, s3, s4]
+shares = [s1,s2,s3,s4,s5]
 
 p = EltonGruberPortfolio(shares,mkt, rf)
 
-print(p.mkt_return)
+print(list(p.cut_off_rate()))
 
 #print(p.adjusted())
 
