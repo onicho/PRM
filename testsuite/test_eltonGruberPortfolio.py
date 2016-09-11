@@ -5,18 +5,20 @@ import numpy.testing as npt
 
 class TestEltonGruberPortfolio(TestCase):
 
-    s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
-    s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
-    s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-    s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
-    mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-    rf = 1.5
-    shares = [s1, s2, s3, s4]
-
     def test_class_inst(self):
+        """
 
+        :return:
+        """
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
         s = [s1, s2, s3, s4]
         p = EltonGruberPortfolio(s, mkt, rf)
+
         self.assertTrue(p.candidates == [s1, s2, s3, s4])
         self.assertTrue(len(s) == len(p.candidates))
         self.assertTrue(type(p.rfr) == float)
