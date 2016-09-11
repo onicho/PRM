@@ -292,28 +292,32 @@ class EltonGruberPortfolio(WeightedPortfolio):
 
         return c
 
+    def filtered(self):
+        """
+        Filters candidate shares that were ordered by their their erbs
+        All ordered securities with the index that is equal or less than the
+        index of the cut-off rate will be included in the optimal portfolio.
+        :return: shares to be included in the optimal portfolio
+        :rtype: list[Share]
+        """
+        c = self.cut_off_rate()
+        n = list(c.values())[0] + 1
 
-    #
-    # def shares_filter(self):
-    #
-    #     rate = self.cut_off_rate()
-    #     n = (list(rate.values()))[0] + 1
-    #
-    #     shares = self.order()
-    #     filtered_shares = shares[: n]
-    #
-    #     return filtered_shares
-    #
-    #
-    #
-    #
+        items = self.order()
+        filtered = items[: n]
+
+        return filtered
+
+
+
+
     # def unadjusted(self):
     #
     #     rate = self.cut_off_rate()
     #     cof = list(rate.keys())[0]
     #
     #     unadj_weights = []
-    #     filtered_shares = self.shares_filter()
+    #     filtered_shares = self.filtered()
     #
     #     for item in filtered_shares:
     #         w = (
@@ -353,7 +357,7 @@ class EltonGruberPortfolio(WeightedPortfolio):
     #
     #
     # def shs_zip_props(self):
-    #     shares = self.shares_filter()
+    #     shares = self.filtered()
     #     weights = self.adjusted_percent()
     #     self.final = dict(zip(map(Share, shares), weights))
     #
@@ -362,7 +366,7 @@ class EltonGruberPortfolio(WeightedPortfolio):
     #
     #
     #
-    #
+
 
 
 
@@ -374,13 +378,20 @@ s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
 s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
 s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
 s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
+s6 = ShareFactory.create('AAL', '2009-01-01', '2014-12-31')
+s7 = ShareFactory.create('BRBY', '2009-01-01', '2014-12-31')
+s8 = ShareFactory.create('BP', '2009-01-01', '2014-12-31')
+s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
+s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
-shares = [s1,s2,s3,s4,s5]
+shares = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10]
 
 p = EltonGruberPortfolio(shares,mkt, rf)
 
 print(list(p.cut_off_rate()))
+
+print(list(p.filtered()))
 
 #print(p.adjusted())
 

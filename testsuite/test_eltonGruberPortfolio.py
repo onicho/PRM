@@ -163,6 +163,30 @@ class TestEltonGruberPortfolio(TestCase):
         self.assertTrue(type(p.cut_off_rate()) == dict)
         self.assertTrue(len(p.cut_off_rate()) == 1)
 
+    def test_filtered(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
+        s6 = ShareFactory.create('AAL', '2009-01-01', '2014-12-31')
+        s7 = ShareFactory.create('BRBY', '2009-01-01', '2014-12-31')
+        s8 = ShareFactory.create('BP', '2009-01-01', '2014-12-31')
+        s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
+        s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        shares = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10]
+        shares1 = [s1, s2, s3, s4]
+
+        p = EltonGruberPortfolio(shares, mkt, rf)
+        self.assertEqual(p.filtered(), [s1, s3, s5, s7, s10, s4])
+
+        p = EltonGruberPortfolio(shares1, mkt, rf)
+        self.assertEqual(p.filtered(), [s1, s3, s4])
+
+
 
 
 
