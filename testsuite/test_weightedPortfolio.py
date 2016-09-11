@@ -13,10 +13,10 @@ class TestWeightedPortfolio(TestCase):
     s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
     mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
     rf = 1.5
-    shares = [s1, s2, s3, s4]
+
 
     def test_class_inst(self):
-
+        shares = [s1, s2, s3, s4]
         p = WeightedPortfolio(shares, mkt, rf)
         self.assertTrue(p.candidates == [s1, s2, s3, s4])
         self.assertTrue(len(shares) == len(p.candidates))

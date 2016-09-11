@@ -2,7 +2,7 @@
 This module contains classes that can be used to create Portfolio objects, which
 represent a portfolio of stock market shares.
 """
-from abc import abstractmethod, ABCMeta
+import abc
 from logic.calculator import *
 from logic.share import Share
 
@@ -110,28 +110,25 @@ class WeightedPortfolio(Portfolio):
     """
 
     """
-
-    __metaclass__ = ABCMeta
+    __metaclass__ = abc.ABCMeta
 
     def __init__(self, shares, market, rfr):
         super().__init__(shares, market, rfr)
         self.final = {}
 
-    @abstractmethod
+    @abc.abstractmethod
     def unadjusted(self):
         raise NotImplementedError
 
-    @abstractmethod
+    @abc.abstractmethod
     def adjusted(self):
         raise NotImplementedError
 
-    @abstractmethod
     def adjusted_percent(self):
-        raise NotImplementedError
-        # percents = [round((i * 100), 2) for i in self.adjusted()]
-        # return percents
+        percentage = [round((w * 100), 2) for w in self.adjusted()]
+        return percentage
 
-    @abstractmethod
+    @abc.abstractmethod
     def shs_zip_props(self):
         raise NotImplementedError
 
@@ -181,7 +178,7 @@ class EltonGruberPortfolio(WeightedPortfolio):
         ordered = [item[1] for item in sorted(stocks.items(), reverse=True)]
         return ordered
 
-    def cut_off_rate(self):
+    def cutoff(self):
         """
         Calculates the unique cut-off rate c* for erb. All securities with erbs
         greater than cut-off rate will be included in the portfolio, but all
@@ -211,8 +208,8 @@ class EltonGruberPortfolio(WeightedPortfolio):
          4. Compare cut-rates with erbs of ordered shares and identify the
          unique cut off rate
 
-        :return:
-        :rtype:
+        :return: the unique cut-off rate and its index in the list
+        :rtype: dict{float : int}
         """
         stocks = self.order()
 
@@ -300,7 +297,7 @@ class EltonGruberPortfolio(WeightedPortfolio):
         :return: shares to be included in the optimal portfolio
         :rtype: list[Share]
         """
-        c = self.cut_off_rate()
+        c = self.cutoff()
         n = list(c.values())[0] + 1
 
         items = self.order()
@@ -308,61 +305,73 @@ class EltonGruberPortfolio(WeightedPortfolio):
 
         return filtered
 
+    def unadjusted(self):
+        """
+        Calculates unadjusted (unnormalised) weights of shares in Elton Gruber
+        Portfolio. The formula to find the weight w of a security i is:
 
+        wi = (Bi / sri) * ((ri - rf) / Bi - c* ), which can also be expressed:
 
+        wi = (Bi / sri) * (erbi - c* ), where:
 
-    # def unadjusted(self):
-    #
-    #     rate = self.cut_off_rate()
-    #     cof = list(rate.keys())[0]
-    #
-    #     unadj_weights = []
-    #     filtered_shares = self.filtered()
-    #
-    #     for item in filtered_shares:
-    #         w = (
-    #             float((c.beta(item.historical_prices, self.mkt_ticker.historical_prices) / c.s_risk(
-    #                 item.historical_prices, self.mkt_ticker.historical_prices))) *
-    #
-    #             (float(c.erb(item.historical_prices, self.mkt_ticker.historical_prices, self.risk_free_rate)) - float(
-    #                 cof))
-    #         )
-    #         unadj_weights.append(w)
-    #
-    #     return unadj_weights
-    #
-    #
-    #
-    #
-    #
-    # def adjusted(self):
-    #
-    #     weights = self.unadjusted()
-    #     sum_of_weights = sum(weights)
-    #
-    #     norm_weights = []
-    #
-    #     for i in weights:
-    #         norm_weights.append(i / sum_of_weights)
-    #
-    #     return norm_weights
-    #
-    #
-    #
+        Bi - is Beta of a share i
+        sri - specific risk of a share i
+        erbi - excess return to beta of share i
+        c* - the unique cut-off rate of the portfolio
+
+        :return: unadjusted proportions of shares for the portfolio
+        :rtype: list[float]
+        """
+
+        weights = []
+        securities = self.filtered()
+
+        for item in securities:
+
+            c = list(self.cutoff().keys())[0]
+            rf = self.rfr
+            mkt = self.market
+            bi = beta(item, mkt)
+            sri = specific_risk(item, mkt)
+            erbi= erb(item, mkt, rf)
+
+            w = (bi/sri) * (erbi - c)
+            weights.append(w)
+
+        return weights
+
+    def adjusted(self):
+        """
+        Calculates the normalised weights, i.e. proportion of portfolio invested
+        in i share of the portfolio. The sum of adjusted weights should add up
+        to 1.
+
+        prop  = wi / SUM[unadjusted weights]
+        :return: adjusted proportions of shares for the portfolio
+        :rtype: list[float]
+        """
+
+        weights = self.unadjusted()
+
+        adj = [(w/sum(weights))for w in weights]
+        return adj
+
     # def adjusted_percent(self):
-    #     weights_percent = [round((i * 100), 2) for i in self.adjusted()]
     #
-    #     return weights_percent
-    #
-    #
-    #
-    # def shs_zip_props(self):
-    #     shares = self.filtered()
-    #     weights = self.adjusted_percent()
-    #     self.final = dict(zip(map(Share, shares), weights))
-    #
-    #
-    #
+    #     percentage = [round((w * 100), 2) for w in self.adjusted()]
+    #     return percentage
+
+
+
+
+    def shs_zip_props(self):
+        return "hi"
+        # shares = self.filtered()
+        # weights = self.adjusted_percent()
+        # self.final = dict(zip(map(Share, shares), weights))
+
+
+
     #
     #
     #
@@ -385,13 +394,14 @@ s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
 s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
-shares = [s1,s2,s3,s4,s5,s6,s7,s8,s9,s10]
+shares = [s4,s5] #s5,s6,s7,s8,s9,s10
 
 p = EltonGruberPortfolio(shares,mkt, rf)
 
-print(list(p.cut_off_rate()))
+#print(list(p.cutoff()))
 
-print(list(p.filtered()))
+print(p.filtered())
+print(p.adjusted_percent())
 
 #print(p.adjusted())
 

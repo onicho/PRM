@@ -126,7 +126,7 @@ class TestEltonGruberPortfolio(TestCase):
         p = EltonGruberPortfolio(shares1, mkt, rf)
         self.assertTrue(p.order() == [s1, s3, s2])
 
-    def test_cutoff_rate(self):
+    def test_cutoff(self):
 
         s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
         s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
@@ -142,26 +142,26 @@ class TestEltonGruberPortfolio(TestCase):
 
         p = EltonGruberPortfolio(shares, mkt, rf)
         # Excel calculation yield to 7.34521531833
-        npt.assert_almost_equal(list(p.cut_off_rate())[0], 7.34521531833, 1)
+        npt.assert_almost_equal(list(p.cutoff())[0], 7.34521531833, 1)
 
         p = EltonGruberPortfolio(shares1, mkt, rf)
         # Excel calculation yield to 5.92075245998
-        npt.assert_almost_equal(list(p.cut_off_rate())[0], 5.92075245998, 1)
+        npt.assert_almost_equal(list(p.cutoff())[0], 5.92075245998, 1)
 
         p = EltonGruberPortfolio(shares2, mkt, rf)
         # Excel calculation yield to 3.3806189770
-        npt.assert_almost_equal(list(p.cut_off_rate())[0], 3.3806189770, 1)
+        npt.assert_almost_equal(list(p.cutoff())[0], 3.3806189770, 1)
 
         p = EltonGruberPortfolio(shares2, mkt, rf)
         # Excel calculation yield to 3.3806189770
-        npt.assert_almost_equal(list(p.cut_off_rate())[0], 3.3806189770, 1)
+        npt.assert_almost_equal(list(p.cutoff())[0], 3.3806189770, 1)
 
         p = EltonGruberPortfolio(shares3, mkt, rf)
-        npt.assert_almost_equal(list(p.cut_off_rate())[0], 7.9804492260, 1)
+        npt.assert_almost_equal(list(p.cutoff())[0], 7.9804492260, 1)
 
         p = EltonGruberPortfolio(shares, mkt, rf)
-        self.assertTrue(type(p.cut_off_rate()) == dict)
-        self.assertTrue(len(p.cut_off_rate()) == 1)
+        self.assertTrue(type(p.cutoff()) == dict)
+        self.assertTrue(len(p.cutoff()) == 1)
 
     def test_filtered(self):
 
@@ -185,6 +185,110 @@ class TestEltonGruberPortfolio(TestCase):
 
         p = EltonGruberPortfolio(shares1, mkt, rf)
         self.assertEqual(p.filtered(), [s1, s3, s4])
+
+    def test_unadjusted(self):
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
+        s6 = ShareFactory.create('AAL', '2009-01-01', '2014-12-31')
+        s7 = ShareFactory.create('BRBY', '2009-01-01', '2014-12-31')
+        s8 = ShareFactory.create('BP', '2009-01-01', '2014-12-31')
+        s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
+        s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        shares = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10]
+        shares1 = [s1, s2, s3, s4]
+
+        p = EltonGruberPortfolio(shares1, mkt, rf)
+        self.assertEqual(p.unadjusted(), [0.0022197084879073507,
+                                         0.0024667678423211897,
+                                         0.001819584861198741])
+
+        p = EltonGruberPortfolio(shares, mkt, rf)
+        self.assertEqual(p.unadjusted(), [0.0018518641189718167,
+                                          0.0018737711261152996,
+                                          5.729847026799712e-05,
+                                          0.001984782239823533,
+                                          0.001360209193855437,
+                                          0.0007430547080424998])
+
+        p = EltonGruberPortfolio(shares1, mkt, rf)
+        self.assertTrue(type(p.unadjusted()) == list)
+        self.assertTrue(all(type(w) is float for w in p.unadjusted()))
+
+    def test_adjusted(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
+        s6 = ShareFactory.create('AAL', '2009-01-01', '2014-12-31')
+        s7 = ShareFactory.create('BRBY', '2009-01-01', '2014-12-31')
+        s8 = ShareFactory.create('BP', '2009-01-01', '2014-12-31')
+        s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
+        s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        shares = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10]
+        shares1 = [s1, s2, s3, s4]
+        shares2 = [s2]
+        shares3 = [s4,s5]
+
+        p = EltonGruberPortfolio(shares1, mkt, rf)
+        self.assertTrue(sum(p.adjusted()) == 1.0)
+        self.assertEqual(p.adjusted(), [0.34117547047238844,
+                                        0.37914919176775175,
+                                        0.2796753377598598])
+
+        p = EltonGruberPortfolio(shares, mkt, rf)
+        self.assertTrue(sum(p.adjusted()) == 1.0)
+        self.assertEqual(p.adjusted(), [0.2352774562504891,
+                                        0.23806071926745476,
+                                        0.007279712476519888,
+                                        0.25216456856246044,
+                                        0.17281319715645185,
+                                        0.09440434628662396])
+
+        p = EltonGruberPortfolio(shares2, mkt, rf)
+        self.assertEqual(p.adjusted(), [1.0])
+
+        p = EltonGruberPortfolio(shares3, mkt, rf)
+        self.assertEqual(p.adjusted(), [0.03402189122906981,
+                                        0.9659781087709303])
+
+    def test_adjusted_percent(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        s5 = ShareFactory.create('RBS', '2009-01-01', '2014-12-31')
+        s6 = ShareFactory.create('AAL', '2009-01-01', '2014-12-31')
+        s7 = ShareFactory.create('BRBY', '2009-01-01', '2014-12-31')
+        s8 = ShareFactory.create('BP', '2009-01-01', '2014-12-31')
+        s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
+        s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        shares = [s4, s5]  # s5,s6,s7,s8,s9,s10
+
+        p = EltonGruberPortfolio(shares, mkt, rf)
+
+        self.assertEqual(p.adjusted_percent(), [3.4, 96.6] )
+
+        #print(p.adjusted_percent())
+
+
+
+
+
+
+
+
 
 
 
