@@ -160,7 +160,7 @@ class EltonGruberPortfolio(WeightedPortfolio):
         :type rfr: float
         """
         super().__init__(shares, market, rfr)
-        #self.shs_zip_props()
+        self.shs_zip_props()
 
     def order(self):
         """
@@ -356,29 +356,120 @@ class EltonGruberPortfolio(WeightedPortfolio):
         adj = [(w/sum(weights))for w in weights]
         return adj
 
-    # def adjusted_percent(self):
-    #
-    #     percentage = [round((w * 100), 2) for w in self.adjusted()]
-    #     return percentage
-
-
-
-
     def shs_zip_props(self):
-        return "hi"
-        # shares = self.filtered()
-        # weights = self.adjusted_percent()
-        # self.final = dict(zip(map(Share, shares), weights))
 
+        s = self.filtered()
+        w = self.adjusted_percent()
 
-
-    #
-    #
-    #
+        self.final = dict(zip(map(Share, s), w))
 
 
 
 
+class TreynorBlackPortfolio(Portfolio):
+    def __init__(self, lst_of_shares, market_ticker, rfr):
+
+        super().__init__(lst_of_shares, market_ticker, rfr)
+        self.final_active_portfolio = {}
+        self.active_proportion_tb = 0
+        self.zip_shares_proportions()
+        self.active_port()
+
+    def non_zero_alpha(self):
+        return all(alpha != 0 for alpha in self.shares_alphas())
+
+    def unadjusted_weights(self):
+
+        alphas = self.shares_alphas()
+        non_zero = self.non_zero_alpha()
+        sp_risk = self.shares_specific_risk()
+
+        if non_zero:
+
+            index = 0
+            unadj_w = []
+
+            while index < len(alphas):
+                w = alphas[index] / sp_risk[index]
+                unadj_w.append(w)
+                index += 1
+            return unadj_w
+        else:
+            print("Some of the candidate securities' alphas are equal to zero.")
+
+    def adjusted_weights(self):
+
+        weights = self.unadjusted_weights()
+        adj_w = [float(w / sum(weights)) for w in weights]
+        return adj_w
+
+    def adj_weight_percent(self):
+
+        weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
+        return weights_percent
+
+    def zip_shares_proportions(self):
+        weights = self.adj_weight_percent()
+        self.final_active_portfolio = dict(zip(map(Share, self.candidate_shares), weights))
+
+    def portfolio_alpha(self):
+
+        weights = self.adjusted_weights()
+        alphas = self.shares_alphas()
+
+        if len(weights) == len(alphas):
+
+            position = 0
+            a = []
+            while position < len(alphas):
+                a.append(weights[position] * alphas[position])
+                position += 1
+
+            return sum(a)
+
+    def portfolio_beta(self):
+
+        betas = self.shares_betas()
+        weights = self.adjusted_weights()
+
+        if len(weights) == len(betas):
+
+            position = 0
+            b = []
+            while position < len(betas):
+                b.append(weights[position] * betas[position])
+                position += 1
+
+            return sum(b)
+
+    def portfolio_specific_risk(self):
+
+        sr_shares = self.shares_specific_risk()
+        weights = self.adjusted_weights()
+
+        if len(weights) == len(sr_shares):
+
+            position = 0
+            sr = []
+            while position < len(sr_shares):
+                sr.append(round(pow(weights[position], 2), 4) * round(sr_shares[position], 2))
+                position += 1
+
+            return sum(sr)
+
+    def active_port(self):
+
+        port_alpha = self.portfolio_alpha()
+        port_beta = self.portfolio_beta()
+        port_sp = self.portfolio_specific_risk()
+        return_mkt = self.mkt_return()
+        totrisk_mkt = self.mkt_risk()
+
+        w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(self.risk_free_rate)) / float(totrisk_mkt))
+
+        w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
+
+        self.active_proportion_tb = w_tb
 
 
 
@@ -394,127 +485,10 @@ s9 = ShareFactory.create('TSCO', '2009-01-01', '2014-12-31')
 s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
 mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 rf = 1.5
-shares = [s4,s5] #s5,s6,s7,s8,s9,s10
+shares = [s5,s6,s7,s8,s9,s10]
 
 p = EltonGruberPortfolio(shares,mkt, rf)
 
-#print(list(p.cutoff()))
-
 print(p.filtered())
-print(p.adjusted_percent())
 
-#print(p.adjusted())
-
-
-
-
-
-
-
-
-#
-#
-# class TreynorBlackPortfolio(Portfolio):
-#     def __init__(self, lst_of_shares, market_ticker, rfr):
-#
-#         super().__init__(lst_of_shares, market_ticker, rfr)
-#         self.final_active_portfolio = {}
-#         self.active_proportion_tb = 0
-#         self.zip_shares_proportions()
-#         self.active_port()
-#
-#     def non_zero_alpha(self):
-#         return all(alpha != 0 for alpha in self.shares_alphas())
-#
-#     def unadjusted_weights(self):
-#
-#         alphas = self.shares_alphas()
-#         non_zero = self.non_zero_alpha()
-#         sp_risk = self.shares_specific_risk()
-#
-#         if non_zero:
-#
-#             index = 0
-#             unadj_w = []
-#
-#             while index < len(alphas):
-#                 w = alphas[index] / sp_risk[index]
-#                 unadj_w.append(w)
-#                 index += 1
-#             return unadj_w
-#         else:
-#             print("Some of the candidate securities' alphas are equal to zero.")
-#
-#     def adjusted_weights(self):
-#
-#         weights = self.unadjusted_weights()
-#         adj_w = [float(w / sum(weights)) for w in weights]
-#         return adj_w
-#
-#     def adj_weight_percent(self):
-#
-#         weights_percent = [round((i * 100), 2) for i in self.adjusted_weights()]
-#         return weights_percent
-#
-#     def zip_shares_proportions(self):
-#         weights = self.adj_weight_percent()
-#         self.final_active_portfolio = dict(zip(map(Share, self.candidate_shares), weights))
-#
-#     def portfolio_alpha(self):
-#
-#         weights = self.adjusted_weights()
-#         alphas = self.shares_alphas()
-#
-#         if len(weights) == len(alphas):
-#
-#             position = 0
-#             a = []
-#             while position < len(alphas):
-#                 a.append(weights[position] * alphas[position])
-#                 position += 1
-#
-#             return sum(a)
-#
-#     def portfolio_beta(self):
-#
-#         betas = self.shares_betas()
-#         weights = self.adjusted_weights()
-#
-#         if len(weights) == len(betas):
-#
-#             position = 0
-#             b = []
-#             while position < len(betas):
-#                 b.append(weights[position] * betas[position])
-#                 position += 1
-#
-#             return sum(b)
-#
-#     def portfolio_specific_risk(self):
-#
-#         sr_shares = self.shares_specific_risk()
-#         weights = self.adjusted_weights()
-#
-#         if len(weights) == len(sr_shares):
-#
-#             position = 0
-#             sr = []
-#             while position < len(sr_shares):
-#                 sr.append(round(pow(weights[position], 2), 4) * round(sr_shares[position], 2))
-#                 position += 1
-#
-#             return sum(sr)
-#
-#     def active_port(self):
-#
-#         port_alpha = self.portfolio_alpha()
-#         port_beta = self.portfolio_beta()
-#         port_sp = self.portfolio_specific_risk()
-#         return_mkt = self.mkt_return()
-#         totrisk_mkt = self.mkt_risk()
-#
-#         w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(self.risk_free_rate)) / float(totrisk_mkt))
-#
-#         w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
-#
-#         self.active_proportion_tb = w_tb
+print(p.final)

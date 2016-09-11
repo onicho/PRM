@@ -23,7 +23,7 @@ class TestEltonGruberPortfolio(TestCase):
         self.assertIsInstance(p, EltonGruberPortfolio)
         p_fail = EltonGruberPortfolio
         self.assertRaises(TypeError, p_fail, s, mkt, "10")
-        self.assertEqual(len(p.final), 0)
+
 
     def test_shs_alphas(self):
         """
@@ -274,13 +274,42 @@ class TestEltonGruberPortfolio(TestCase):
         s10 = ShareFactory.create('SGE', '2009-01-01', '2014-12-31')
         mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
         rf = 1.5
-        shares = [s4, s5]  # s5,s6,s7,s8,s9,s10
+        shares = [s4, s5]
+        shares1 = [s1, s2, s3, s4, s5, s6, s7, s8, s9, s10]
+        shares2 = [s7]
 
         p = EltonGruberPortfolio(shares, mkt, rf)
+        self.assertEqual(p.adjusted_percent(), [3.4, 96.6])
 
-        self.assertEqual(p.adjusted_percent(), [3.4, 96.6] )
+        p = EltonGruberPortfolio(shares1, mkt, rf)
+        self.assertEqual(p.adjusted_percent(),
+                         [23.53, 23.81, 0.73, 25.22, 17.28, 9.44])
 
-        #print(p.adjusted_percent())
+        npt.assert_almost_equal(sum(p.adjusted_percent()), 100.00, 1)
+
+        p = EltonGruberPortfolio(shares2, mkt, rf)
+        self.assertEqual(p.adjusted_percent(), [100.00])
+
+    def test_shs_zip_props(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s4 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        shares = [s1,s2,s3,s4]
+
+        p = EltonGruberPortfolio(shares, mkt, rf)
+        self.assertTrue(len(p.final) >= 1)
+
+        filtered = [i.name for i in p.filtered()]
+        percent = p.adjusted_percent()
+        s = [i.name for i in list(p.final.keys())]
+        w = list(p.final.values())
+
+        self.assertEqual(set(percent), set(w))
+        self.assertEqual(set(filtered), set(s))
 
 
 
@@ -307,7 +336,14 @@ class TestEltonGruberPortfolio(TestCase):
 
 
 
-            # def test_ordered(self):
+
+
+
+
+
+
+
+        # def test_ordered(self):
     #     self.fail()
     #
     # def test_cut_off_rate(self):

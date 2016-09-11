@@ -25,6 +25,8 @@ class TestWeightedPortfolio(TestCase):
         p_fail = WeightedPortfolio
         self.assertRaises(TypeError, p_fail, shares, mkt, "10")
         self.assertEqual(len(p.final), 0)
+        self.assertEqual(len(p.final), 0)
+        self.assertTrue(p.market.name == '^FTSE')
 
     def test_unadjusted(self):
 
