@@ -573,14 +573,14 @@ shares2 = [s5,s6, s7, s8]
 
 p = EltonGruberPortfolio(shares,mkt, rf)
 
-print(p.candidates)
-print()
+#print(p.candidates)
+#print()
 #
 #
 #print(p.ptf_specrisk())
 #
 #
-print(p.final)
+#print(p.final)
 # #
 # print(p.unadjusted())
 # print()
