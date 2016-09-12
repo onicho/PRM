@@ -532,18 +532,18 @@ s13 = ShareFactory.create('NG','2009-01-01', '2014-12-31')
 s14 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
 
 
-mkt = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 
 
 rf = 1.5
 
 shares = [s1,s2, s3, s4]
 
-shares1 = [s11,s13, s14]
+shares1 = [s11,s14, s13]
 
 shares2 = [s5,s6, s7, s8]
 
-p = TreynorBlackPortfolio(shares,mkt, rf)
+p = TreynorBlackPortfolio(shares1,mkt, rf)
 
 print(p.candidates)
 print()
@@ -557,7 +557,7 @@ print()
 print(p.unadjusted())
 print()
 print(p.adjusted())
-print(sum(p.adjusted()))
+print(p.adjusted_percent())
 #
 # print()
 #
