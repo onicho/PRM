@@ -1,5 +1,5 @@
 from unittest import TestCase
-from logic.test_portf import *
+from logic.portfolio import *
 
 
 class TestWeightedPortfolio(TestCase):

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from logic.test_portf import *
+from logic.portfolio import *
 
 
 class TestTreynorBlackPortfolio(TestCase):
@@ -59,7 +59,7 @@ class TestTreynorBlackPortfolio(TestCase):
         s = [s1, s2, s3, s4]
         p = TreynorBlackPortfolio(s, mkt, rf)
 
-        self.assertEquals(len(p.shs_alphas), len(shares))
+        self.assertEquals(len(p.shs_alphas), len(s))
         self.assertTrue(all(type(value) == float for value in p.shs_alphas))
         self.assertAlmostEqual(p.shs_alphas[0], 24.689661373391942, 1)
         self.assertAlmostEqual(p.shs_alphas[1], -0.9854334857795548, 1)
@@ -80,7 +80,7 @@ class TestTreynorBlackPortfolio(TestCase):
         s = [s1, s2, s3, s4]
         p = TreynorBlackPortfolio(s, mkt, rf)
 
-        self.assertEquals(len(p.shs_specrisk), len(shares))
+        self.assertEquals(len(p.shs_specrisk), len(s))
         self.assertTrue(
             all(type(value) == float for value in p.shs_specrisk))
         self.assertAlmostEqual(p.shs_specrisk[0], 11085.588185744395)
@@ -102,7 +102,7 @@ class TestTreynorBlackPortfolio(TestCase):
         s = [s1, s2, s3, s4]
         p = TreynorBlackPortfolio(s, mkt, rf)
 
-        self.assertEquals(len(p.shs_betas), len(shares))
+        self.assertEquals(len(p.shs_betas), len(s))
         self.assertTrue(all(type(value) == float for value in p.shs_betas))
         self.assertAlmostEqual(p.shs_betas[0], 0.6282898897597817)
         self.assertAlmostEqual(p.shs_betas[1], 0.8141837308926254)
