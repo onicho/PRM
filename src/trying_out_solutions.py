@@ -2,22 +2,6 @@ from logic.share import ShareFactory
 from logic.portfolio import *
 import pyodbc
 from yahoo_finance import *
-#
-# list_of_epic_strings = ['ERM','CGL', 'NG']
-#
-# shares = []
-#
-# for epic in list_of_epic_strings:
-#     shares.append(ShareFactory.create(epic, '2009-01-01', '2014-12-31'))
-#
-# market = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
-#
-# p = TreynorBlackPortfolio(shares, market, 1.5)
-#
-# print(p.final_active_portfolio)
-#
-# print(p.active_proportion_tb)
-
 
 # cnxn = pyodbc.connect(
 #     'driver={SQL Server};server=localhost;database=PRM;Integrated '
@@ -32,13 +16,38 @@ from yahoo_finance import *
 
 #print(db_tickers)
 
+#
+# s = Share('BP.L')
+#
+# x = s.get_price()
+#
+#
+# prices = [{p['Date']: p['Close']} for p in
+#           s.get_historical('2016-08-31', '2016-08-31')]
+#
+# print(x)
 
-s = Share('^FTSE')
+# cnxn = pyodbc.connect(
+#     'driver={SQL Server};server=localhost;database=PRM_Lite;'
+#     'Integrated Security=True')
+#
+# cursor = cnxn.cursor()
+#
+# cursor.execute("SELECT distinct epic, CALENDAR_DATE, PRICE "
+#                "FROM [dbo].[SHARE_CALENDAR]")
+#
+# po = cursor.fetchall()
+#
+# x = [(item[1],float(item[2])) for item in po]
+#
+# print(x)
 
-x = s.get_price()
 
 
-prices = [{p['Date']: p['Close']} for p in
-          s.get_historical('2016-09-12', '2016-09-12')]
+"""
+  s = self.filtered()
+        w = self.adjusted_percent()
 
-print(x)
+        self.final = dict(zip(map(s, w))
+
+"""
