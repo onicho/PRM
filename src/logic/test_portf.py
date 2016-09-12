@@ -393,8 +393,7 @@ class TreynorBlackPortfolio(WeightedPortfolio):
         super().__init__(shares, mkt, rfr)
         self.active = 0
         self.shs_zip_props()
-
-        #self.active_port()
+        self.active_port()
 
 
     @property
@@ -447,68 +446,97 @@ class TreynorBlackPortfolio(WeightedPortfolio):
 
         self.final = dict(zip(map(Share, s), w))
 
+    def ptf_alpha(self):
+        """
+        Calculates alpha of an active portfolio
 
-    # def portfolio_alpha(self):
-    #
-    #     weights = self.adjusted()
-    #     alphas = self.shares_alphas()
-    #
-    #     if len(weights) == len(alphas):
-    #
-    #         position = 0
-    #         a = []
-    #         while position < len(alphas):
-    #             a.append(weights[position] * alphas[position])
-    #             position += 1
-    #
-    #         return sum(a)
-    #
-    # def portfolio_beta(self):
-    #
-    #     betas = self.shares_betas()
-    #     weights = self.adjusted()
-    #
-    #     if len(weights) == len(betas):
-    #
-    #         position = 0
-    #         b = []
-    #         while position < len(betas):
-    #             b.append(weights[position] * betas[position])
-    #             position += 1
-    #
-    #         return sum(b)
-    #
-    # def portfolio_specific_risk(self):
-    #
-    #     sr_shares = self.shares_specific_risk()
-    #     weights = self.adjusted()
-    #
-    #     if len(weights) == len(sr_shares):
-    #
-    #         position = 0
-    #         sr = []
-    #         while position < len(sr_shares):
-    #             sr.append(round(pow(weights[position], 2), 4) * round(sr_shares[position], 2))
-    #             position += 1
-    #
-    #         return sum(sr)
-    #
-    # def active_port(self):
-    #
-    #     port_alpha = self.portfolio_alpha()
-    #     port_beta = self.portfolio_beta()
-    #     port_sp = self.portfolio_specific_risk()
-    #     return_mkt = self.mkt_return()
-    #     totrisk_mkt = self.mkt_risk()
-    #
-    #     w = (float(port_alpha) / float(port_sp)) / ((float(return_mkt) - float(self.risk_free_rate)) / float(totrisk_mkt))
-    #
-    #     w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
-    #
-    #     self.active = w_tb
+        alf = SUM[wi / ai]
+        wi - is adjusted weights of a share i
+        ai - alpha of a share i
 
+        :return: alpha of active portfolio
+        :rtype: float
+        """
+        weights = self.adjusted()
+        alphas = self.shs_alphas
 
+        idx = 0
+        a = []
 
+        while idx < len(alphas):
+
+            a.append(weights[idx] * alphas[idx])
+            idx += 1
+
+        return sum(a)
+
+    def ptf_beta(self):
+        """
+        Calculates beta of an active portfolio
+
+        beta = SUM[wi / bi]
+        wi - is adjusted weights of a share i
+        bi - beta of a share i
+
+        :return: beta of active portfolio
+        :rtype: float
+        """
+
+        betas = self.shs_betas
+        weights = self.adjusted()
+
+        idx = 0
+        b = []
+
+        while idx < len(betas):
+            b.append(weights[idx] * betas[idx])
+            idx += 1
+
+        return sum(b)
+
+    def ptf_specrisk(self):
+        """
+        Calculates specific risk of an active portfolio
+
+        specrisk = SUM[wi^2 / sri]
+        wi - is adjusted weights of a share i
+        sri - specific risk of a share i
+
+        :return: beta of active portfolio
+        :rtype: float
+        """
+
+        specrisk = self.shs_specrisk
+        weights = self.adjusted()
+
+        idx = 0
+        sr = []
+
+        while idx < len(specrisk):
+
+            sr.append(pow(weights[idx], 2) * specrisk[idx])
+            idx += 1
+
+        return sum(sr)
+
+    def active_port(self):
+        """
+        Calculates proportion of Active portfolio in the Treynor-Black Portfolio
+
+        :return:
+        """
+        a = self.ptf_alpha()
+        b = self.ptf_beta()
+        sr = self.ptf_specrisk()
+        rtrn = self.mkt_return
+        trm = self.mkt_risk
+        rf = self.rfr
+
+        w = (a / sr) / ((rtrn - rf) / trm)
+
+        w_tb = w / (1 + (1 - b) * w)
+
+        self.active = abs(w_tb)
 
 
 
@@ -549,7 +577,7 @@ print(p.candidates)
 print()
 #
 #
-print(p.final)
+#print(p.ptf_specrisk())
 #
 #
 # # print(p.filtered())
@@ -561,6 +589,6 @@ print(p.final)
 # #
 # # print()
 # #
-# # print(p.final)
+print(p.active)
 
 

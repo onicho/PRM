@@ -222,6 +222,109 @@ class TestTreynorBlackPortfolio(TestCase):
         self.assertEqual(set(percent), set(w))
         self.assertEqual(set(filtered), set(s))
 
+    def test_ptf_alpha(self):
+
+        s11 = ShareFactory.create('BRBY', '2015-09-30', '2016-08-31')
+        s21 = ShareFactory.create('TSCO', '2015-09-30', '2016-08-31')
+        s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
+        s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
+        mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+        rf = 1.5
+
+        s1 = [s11, s21, s31, s41]
+
+        p = TreynorBlackPortfolio(s1, mkt1, rf)
+        self.assertEqual(p.ptf_alpha(), -24.106417466052566)
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        s = [s1, s2, s3]
+
+        p = TreynorBlackPortfolio(s, mkt, rf)
+        self.assertEqual(p.ptf_alpha(), 14.573473816187683)
+
+    def test_ptf_beta(self):
+
+        s11 = ShareFactory.create('BRBY', '2015-09-30', '2016-08-31')
+        s21 = ShareFactory.create('TSCO', '2015-09-30', '2016-08-31')
+        s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
+        s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
+        mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+        rf = 1.5
+
+        s1 = [s11, s21, s31, s41]
+
+        p = TreynorBlackPortfolio(s1, mkt1, rf)
+        self.assertEqual(p.ptf_beta(), 0.6413487900041033)
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        s = [s1, s2, s3]
+
+        p = TreynorBlackPortfolio(s, mkt, rf)
+        self.assertEqual(p.ptf_beta(), 0.5110180451602984)
+
+    def test_ptf_specrisk(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        s = [s1, s2, s3]
+
+        p = TreynorBlackPortfolio(s, mkt, rf)
+        self.assertEqual(p.ptf_specrisk(), 2225.8162174170466)
+
+        s11 = ShareFactory.create('BRBY', '2015-09-30', '2016-08-31')
+        s21 = ShareFactory.create('TSCO', '2015-09-30', '2016-08-31')
+        s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
+        s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
+        mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+        rf = 1.5
+
+        s1 = [s11, s21, s31, s41]
+
+        p = TreynorBlackPortfolio(s1, mkt1, rf)
+        self.assertEqual(p.ptf_specrisk(), 5648.998827454592)
+
+    def test_active_port(self):
+
+        s1 = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
+        s2 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+        s3 = ShareFactory.create('NG', '2009-01-01', '2014-12-31')
+        mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+        rf = 1.5
+        s = [s1, s2, s3]
+
+        p = TreynorBlackPortfolio(s, mkt, rf)
+        self.assertAlmostEqual(p.active, 1.0, 1)
+
+        s11 = ShareFactory.create('BRBY', '2015-09-30', '2016-08-31')
+        s21 = ShareFactory.create('TSCO', '2015-09-30', '2016-08-31')
+        s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
+        s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
+        mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+        rf = 1.5
+
+        s1 = [s11, s21, s31, s41]
+
+        p = TreynorBlackPortfolio(s1, mkt1, rf)
+        self.assertAlmostEqual(p.active, 0.35, 1)
+
+
+
+
+
+
+
+
 
 
 
