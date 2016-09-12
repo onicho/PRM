@@ -351,6 +351,10 @@ class EltonGruberPortfolio(WeightedPortfolio):
         return weights
 
     def shs_zip_props(self):
+        """
+
+        :return:
+        """
 
         s = self.filtered()
         w = self.adjusted_percent()
@@ -387,10 +391,11 @@ class TreynorBlackPortfolio(WeightedPortfolio):
         :type rfr: float
         """
         super().__init__(shares, mkt, rfr)
-        self.active_proportion_tb = 0
+        self.active = 0
+        self.shs_zip_props()
 
         #self.active_port()
-        #shs_zip_props(self)
+
 
     @property
     def non_zero_alpha(self):
@@ -432,22 +437,17 @@ class TreynorBlackPortfolio(WeightedPortfolio):
             print("Some of the candidate securities' alphas are equal to zero.")
             return []
 
+    def shs_zip_props(self):
+        """
+
+        :return:
+        """
+        w = self.adjusted_percent()
+        s = self.candidates
+
+        self.final = dict(zip(map(Share, s), w))
 
 
-
-
-
-
-    # def adj_weight_percent(self):
-    #
-    #     weights_percent = [round((i * 100), 2) for i in self.adjusted()]
-    #     return weights_percent
-    #
-    # def shs_zip_props(self):
-    #     weights = self.adj_weight_percent()
-    #     self.final_active_portfolio = dict(zip(map(Share, self.candidate_shares), weights))
-    #
-    #
     # def portfolio_alpha(self):
     #
     #     weights = self.adjusted()
@@ -505,9 +505,9 @@ class TreynorBlackPortfolio(WeightedPortfolio):
     #
     #     w_tb = float(w) / (1 + (1 - float(port_beta)) * float(w))
     #
-    #     self.active_proportion_tb = w_tb
-    #
-    #
+    #     self.active = w_tb
+
+
 
 
 
@@ -532,7 +532,7 @@ s13 = ShareFactory.create('NG','2009-01-01', '2014-12-31')
 s14 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
 
 
-mkt = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
+mkt = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
 
 
 rf = 1.5
@@ -543,24 +543,24 @@ shares1 = [s11,s14, s13]
 
 shares2 = [s5,s6, s7, s8]
 
-p = TreynorBlackPortfolio(shares1,mkt, rf)
+p = TreynorBlackPortfolio(shares,mkt, rf)
 
 print(p.candidates)
 print()
 #
 #
+print(p.final)
+#
+#
+# # print(p.filtered())
+# #
+# print(p.unadjusted())
 # print()
-#
-#
-# print(p.filtered())
-#
-print(p.unadjusted())
-print()
-print(p.adjusted())
-print(p.adjusted_percent())
-#
-# print()
-#
-# print(p.final)
+# print(p.adjusted())
+# print(p.adjusted_percent())
+# #
+# # print()
+# #
+# # print(p.final)
 
 

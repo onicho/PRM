@@ -201,9 +201,26 @@ class TestTreynorBlackPortfolio(TestCase):
 
         self.assertEqual(p.adjusted_percent(), [43.71, 6.69, 42.92, 6.68])
 
+    def test_shs_zip_props(self):
 
+        s11 = ShareFactory.create('BRBY', '2015-09-30', '2016-08-31')
+        s21 = ShareFactory.create('TSCO', '2015-09-30', '2016-08-31')
+        s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
+        s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
+        mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
 
+        s1 = [s11, s21, s31, s41]
 
+        p = TreynorBlackPortfolio(s1, mkt1, rf)
+        self.assertTrue(len(p.final) >= 1)
+
+        filtered = [i.name for i in p.candidates]
+        percent = p.adjusted_percent()
+        s = [i.name for i in list(p.final.keys())]
+        w = list(p.final.values())
+
+        self.assertEqual(set(percent), set(w))
+        self.assertEqual(set(filtered), set(s))
 
 
 
