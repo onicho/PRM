@@ -24,25 +24,37 @@ from yahoo_finance import *
 #
 # prices = [{p['Date']: p['Close']} for p in
 #           s.get_historical('2016-08-31', '2016-08-31')]
-#
-# print(x)
 
+# #print(x)
+#
 # cnxn = pyodbc.connect(
-#     'driver={SQL Server};server=localhost;database=PRM_Lite;'
+#     'driver={SQL Server};server=localhost;database=PRM;'
 #     'Integrated Security=True')
 #
 # cursor = cnxn.cursor()
 #
-# cursor.execute("SELECT distinct epic, CALENDAR_DATE, PRICE "
-#                "FROM [dbo].[SHARE_CALENDAR]")
+# cursor.execute("SELECT PRICE "
+#                "FROM [dbo].[SHARE_CALENDAR]"
+#                "where epic = 'VOD' and CALENDAR_DATE between '2016-05-11' and "
+#                "'2016-05-31'")
 #
-# po = cursor.fetchall()
+# p = cursor.fetchall()
 #
-# x = [(item[1],float(item[2])) for item in po]
+# x = [(float(item[0])) for item in p]
 #
 # print(x)
 
 
+# s = Share('VOD.L')
+#
+# z = s.get_historical('2016-05-11', '2016-05-31')
+#
+# pcs = [float(item['Close']) for item in z]
+#
+# print(pcs)
+#
+#
+# x.reverse() == pcs
 
 """
   s = self.filtered()

@@ -2,9 +2,9 @@ from unittest import TestCase
 from data.datatransfer import *
 
 
-class TestUpdate_db(TestCase):
+class TestUpdateDb(TestCase):
 
-    def test_update_db(self):
+    def test_update_db_errors(self):
 
         d = '2014-05-11'
         d1 = 2015
@@ -32,6 +32,34 @@ class TestUpdate_db(TestCase):
 
         # checks if anything at all is returned by the call
         self.assertTrue(results)
+
+    def test_update_db(self):
+
+        cnxn = pyodbc.connect(
+            'driver={SQL Server};server=localhost;database=PRM;'
+            'Integrated Security=True')
+
+        cursor = cnxn.cursor()
+
+        cursor.execute("SELECT PRICE "
+                       "FROM [dbo].[SHARE_CALENDAR]"
+                       "where epic = 'VOD' and CALENDAR_DATE between "
+                       "'2016-05-11' and '2016-05-31'")
+
+        p = cursor.fetchall()
+        pdb = [(float(item[0])) for item in p]
+
+        s = Share('VOD.L')
+        pyh = [float(item['Close']) for item in s.get_historical('2016-05-11',
+                                                                 '2016-05-31')]
+
+        self.assertEqual(set(pdb), set(pyh))
+
+
+
+
+
+
 
 
 
