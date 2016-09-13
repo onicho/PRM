@@ -44,7 +44,16 @@ class TestInput(TestCase):
         self.assertFalse(valid_date("2 Sen 2015"))
 
     def test_get_period(self):
-        pass
+
+        with patch('builtins.input', side_effect=['2009-01-01', '2015-04-12']):
+            self.assertEqual(get_period(), ['2009-01-01', '2015-04-12'])
+
+        with patch('builtins.input', side_effect=['2016-10-31', '2013-02-28',
+                                                  '2013-02-28', '2013-03-04',
+                                                  '2014', '2014-07-08']):
+
+            self.assertEqual(get_period(), ['2013-02-28', '2014-07-08'])
+
 
 
 
