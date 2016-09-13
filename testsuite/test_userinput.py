@@ -54,6 +54,21 @@ class TestInput(TestCase):
 
             self.assertEqual(get_period(), ['2013-02-28', '2014-07-08'])
 
+    def test_get_rfr(self):
+
+        with patch('builtins.input', side_effect=['100', '5000',
+                                                  '47392754.579843759847574983',
+                                                  '2.75']):
+            self.assertEqual(get_rfr(), 2.75)
+
+        with patch('builtins.input', side_effect=['100.01', 'hi', '2.75']):
+            self.assertEqual(get_rfr(), 2.75)
+
+        with patch('builtins.input', side_effect=['99.999999999999', 'hi',
+                                                  '1.5']):
+            self.assertEqual(get_rfr(), 99.999999999999)
+
+
 
 
 
