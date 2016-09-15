@@ -1,6 +1,7 @@
 from unittest import TestCase
-from logic.portfolio import *
 
+from data.share import *
+from logic.portfolio import *
 
 
 class TestPortfolio(TestCase):

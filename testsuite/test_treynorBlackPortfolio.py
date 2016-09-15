@@ -1,4 +1,6 @@
 from unittest import TestCase
+
+from data.share import *
 from logic.portfolio import *
 
 
@@ -195,6 +197,8 @@ class TestTreynorBlackPortfolio(TestCase):
         s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
         mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
 
+        rf = 1.5
+
         s1 = [s11, s21, s31, s41]
 
         p = TreynorBlackPortfolio(s1, mkt1, rf)
@@ -208,6 +212,8 @@ class TestTreynorBlackPortfolio(TestCase):
         s31 = ShareFactory.create('RBS', '2015-09-30', '2016-08-31')
         s41 = ShareFactory.create('BP', '2015-09-30', '2016-08-31')
         mkt1 = ShareFactory.create('^FTSE', '2015-09-30', '2016-08-31')
+
+        rf = 1.5
 
         s1 = [s11, s21, s31, s41]
 

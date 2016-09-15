@@ -2,9 +2,9 @@
 assessments for Share objects by using Shares' historical prices values
 """
 
-import numpy as np
 import statistics
-from logic.share import *
+
+import numpy as np
 
 
 def returns(prices):

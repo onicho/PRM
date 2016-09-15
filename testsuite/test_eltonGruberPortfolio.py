@@ -1,6 +1,9 @@
 from unittest import TestCase
-from logic.portfolio import *
+
 import numpy.testing as npt
+
+from data.share import *
+from logic.portfolio import *
 
 
 class TestEltonGruberPortfolio(TestCase):

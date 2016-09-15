@@ -34,6 +34,10 @@ class TestUpdateDb(TestCase):
         self.assertTrue(results)
 
     def test_update_db(self):
+        """
+        Checks that db and API return identical results if the same call is made
+        to both.
+        """
 
         cnxn = pyodbc.connect(
             'driver={SQL Server};server=localhost;database=PRM;'

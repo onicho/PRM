@@ -1,8 +1,10 @@
 from unittest import TestCase
-from logic.calculator import *
+
 import numpy.testing as npt
 from numpy import *
-from logic.share import *
+
+from data.share import *
+from logic.calculator import *
 
 test = [
     228.75,
@@ -335,15 +337,14 @@ class TestBeta(TestCase):
 
     def test_beta1(self):
         """
-
-        :return:
+        Tests mathematical accuracy of results produced by the beta function
         """
         # instantiating Share objects with prices
         s = ShareFactory.create('ERM', '2009-01-01', '2014-12-31')
         m = ShareFactory.create('^FTSE', '2009-01-01', '2014-12-31')
 
         # Result produced by Excel's slope function = 0.627308583277
-        # Result produced by a scientific calculator = 0.0.627308583277
+        # Result produced by a scientific calculator = 0.6273085833
         npt.assert_almost_equal(beta(s, m), 0.627308583277, 2)
 
     def test_beta2(self):

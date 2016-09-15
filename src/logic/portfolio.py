@@ -3,8 +3,9 @@ This module contains classes that can be used to create Portfolio objects, which
 represent a portfolio of stock market shares.
 """
 import abc
+
+from data.share import Share
 from logic.calculator import *
-from logic.share import Share
 
 
 class Portfolio(object):
@@ -122,9 +123,9 @@ class WeightedPortfolio(Portfolio):
 
     def adjusted(self):
         """
-        Calculates the normalised weights, i.e. proportion of portfolio invested
-        in i share of the portfolio. The sum of adjusted weights should add up
-        to 1.
+        Calculates normalised weights, i.e. a proportion of the portfolio
+        invested in i share of the portfolio. The sum of adjusted weights should
+        add up to 1.
         prop  = wi / SUM[unadjusted weights]
         :return: adjusted proportions of shares for the portfolio
         :rtype: list[float]
@@ -540,38 +541,38 @@ class TreynorBlackPortfolio(WeightedPortfolio):
 
 
 
-s1 = ShareFactory.create('BRBY', '2009-01-01', '2016-08-31')
-s2 = ShareFactory.create('TSCO', '2009-01-01', '2016-08-31')
-s3 = ShareFactory.create('RBS', '2009-01-01', '2016-08-31')
-s4 = ShareFactory.create('BP', '2009-01-01', '2016-08-31')
-
-
-s5 = ShareFactory.create('RBS', '2009-01-01', '2015-07-31')
-s6 = ShareFactory.create('AAL', '2009-01-01','2015-07-31')
-s7 = ShareFactory.create('BRBY', '2009-01-01', '2015-07-31')
-s8 = ShareFactory.create('BP', '2009-01-01', '2015-07-31')
-s9 = ShareFactory.create('TSCO', '2009-01-01', '2015-07-31')
-s10 = ShareFactory.create('SGE', '2009-01-01', '2015-07-31')
-
-
-s11 = ShareFactory.create('ERM', '2009-01-01', '2016-08-31')
-s12 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
-s13 = ShareFactory.create('NG','2009-01-01', '2014-12-31')
-s14 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
-
-
-mkt = ShareFactory.create('^FTSE', '2009-01-01', '2016-08-31')
-
-
-rf = 1.5
-
-shares = [s1,s2, s3, s4, s11]
-
-shares1 = [s11,s14, s13]
-
-shares2 = [s5,s6, s7, s8]
-
-p = EltonGruberPortfolio(shares,mkt, rf)
+# s1 = ShareFactory.create('BRBY', '2009-01-01', '2016-08-31')
+# s2 = ShareFactory.create('TSCO', '2009-01-01', '2016-08-31')
+# s3 = ShareFactory.create('RBS', '2009-01-01', '2016-08-31')
+# s4 = ShareFactory.create('BP', '2009-01-01', '2016-08-31')
+#
+#
+# s5 = ShareFactory.create('RBS', '2009-01-01', '2015-07-31')
+# s6 = ShareFactory.create('AAL', '2009-01-01','2015-07-31')
+# s7 = ShareFactory.create('BRBY', '2009-01-01', '2015-07-31')
+# s8 = ShareFactory.create('BP', '2009-01-01', '2015-07-31')
+# s9 = ShareFactory.create('TSCO', '2009-01-01', '2015-07-31')
+# s10 = ShareFactory.create('SGE', '2009-01-01', '2015-07-31')
+#
+#
+# s11 = ShareFactory.create('ERM', '2009-01-01', '2016-08-31')
+# s12 = ShareFactory.create('AML', '2009-01-01', '2014-12-31')
+# s13 = ShareFactory.create('NG','2009-01-01', '2014-12-31')
+# s14 = ShareFactory.create('CGL', '2009-01-01', '2014-12-31')
+#
+#
+# mkt = ShareFactory.create('^FTSE', '2009-01-01', '2016-08-31')
+#
+#
+# rf = 1.5
+#
+# shares = [s1,s2, s3, s4, s11]
+#
+# shares1 = [s11,s14, s13]
+#
+# shares2 = [s5,s6, s7, s8]
+#
+# p = EltonGruberPortfolio(shares,mkt, rf)
 
 #print(p.candidates)
 #print()

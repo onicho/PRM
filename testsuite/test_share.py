@@ -1,7 +1,6 @@
 from unittest import TestCase
-from logic.share import *
-import numpy.testing as npt
-from logic.exceptions import *
+
+from data.share import *
 
 
 class TestShare(TestCase):
