@@ -10,7 +10,7 @@ from logic.exceptions import *
 
 def update_db(start, end):
     """
-    Updates the PRM database with closing daily prices from Yahoo Finance.
+    Updates the PRM database with closing daily prices from Yahoo Finance API.
 
     It establishes connection with the PRM db to retrieve all epic codes that
     need to be updated. Then a call to Yahoo Finance API is made to retrieve
