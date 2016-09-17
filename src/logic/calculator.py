@@ -119,6 +119,7 @@ def correlation(prices):
         print("Insufficient number of shares to calculate correlations.  " +
               " (Minimum 2 required, but %(num)d were provided)" % {
                   "num": len(prices)})
+        print()
 
 
 def beta(share, market):

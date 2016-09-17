@@ -66,12 +66,12 @@ def market_maker(dates):
 
 
 def risk_indicators(stocks, mkt, rfr):
-
     names = [s.name for s in stocks]
 
     #  returns
     print()
-    print(Fore.BLUE + "Average Annualised Return R as percentage %" +'\033[30m')
+    print(
+        Fore.BLUE + "Average Annualised Return R as percentage %" + '\033[30m')
     print()
     rts = [annualise(np.average(returns(s.prices))) for s in stocks]
     rts_tab = [[s, r] for s, r in zip(names, rts)]
@@ -82,7 +82,7 @@ def risk_indicators(stocks, mkt, rfr):
     #  standard deviation
     print()
     print(
-        Fore.BLUE + "Annualised Standard Deviation as percentage %" +'\033[30m')
+        Fore.BLUE + "Annualised Standard Deviation as percentage %" + '\033[30m')
     print()
     sdev = [stdvt(returns(s.prices)) for s in stocks]
     sdev_tab = [[s, sd] for s, sd in zip(names, sdev)]
@@ -100,16 +100,33 @@ def risk_indicators(stocks, mkt, rfr):
     print(tabulate(b_tab, headers=['Share', 'Beta'], tablefmt='orgtbl',
                    floatfmt=".4f", numalign="right"))
     print()
+    print("""
+    INVESTOPEDIA EXPLAINS: a beta of less than 1 means that the security is
+    theoretically less volatile than the market. A beta of greater than 1
+    indicates that the security's price is theoretically more volatile than the
+    market. For example, if a stock's beta is 1.2, it's  20% more volatile than
+    the market. Negative betas are possible for investments that tend to go down
+    when the market goes up, and vice versa.
+    """)
+    print()
 
     #  Alpha
     print()
     print(
         Fore.BLUE + "Alpha value of a share" + '\033[30m')
     print()
-    a = [alpha(s, mkt,rfr) for s in stocks]
+    a = [alpha(s, mkt, rfr) for s in stocks]
     a_tab = [[s, av] for s, av in zip(names, a)]
     print(tabulate(a_tab, headers=['Share', 'Alpha'], tablefmt='orgtbl',
                    floatfmt=".4f", numalign="right"))
+    print()
+    print("""
+    INVESTOPEDIA EXPLAINS: Alpha measures volatility or risk, and is also often
+    referred to as “excess return” or “abnormal rate of return.” A positive alpha
+    of 1.0 means the fund or stock has outperformed its benchmark index (e.g.
+    FTSE100) by 1 percent. A similar negative alpha of 1.0 would indicate an
+    underperformance of 1 percent.
+    """)
     print()
 
     #  ERB
@@ -142,8 +159,16 @@ def risk_indicators(stocks, mkt, rfr):
     print()
     sr = [specific_risk(s, mkt) for s in stocks]
     sr_tab = [[s, sr] for s, sr in zip(names, sr)]
-    print(tabulate(sr_tab, headers=['Share', 'Specific Risk'],tablefmt='orgtbl',
-                   floatfmt=".4f", numalign="right"))
+    print(
+        tabulate(sr_tab, headers=['Share', 'Specific Risk'], tablefmt='orgtbl',
+                 floatfmt=".4f", numalign="right"))
+    print()
+    print("""
+      INVESTOPEDIA EXPLAINS: Specific risk, also known as "unsystematic risk,"
+      "diversifiable risk" or "residual risk," is the type of uncertainty that
+      comes with the company or industry you invest in. Unsystematic risk can be
+      reduced through diversification.
+      """)
     print()
 
     #  Correlations
@@ -168,17 +193,19 @@ def eg_constructor(shares, mkt, rfr):
         Fore.BLUE + "Elton and Gruber Active Investment Portfolio" +
         '\033[30m')
     print()
-    print(tabulate(eg_tab, headers = ['Share', 'Weight %'], tablefmt='orgtbl',
-                   numalign ="right"))
+    print(tabulate(eg_tab, headers=['Share', 'Weight %'], tablefmt='orgtbl',
+                   numalign="right"))
     print()
 
     #  plotting a pie chart
 
     plt.pie([item[1] for item in eg_tab],
             labels=[item[0] for item in eg_tab],
+            colors=['lightblue', 'green', 'cyan', 'yellowgreen', 'mediumpurple',
+                    'lightskyblue', 'lightcoral', 'yellow'],
             autopct='%1.2f%%',  # print the values inside the wedges
-            )    #  REFERENCE:
-                 # https://www.getdatajoy.com/examples/python-plots/pie-chart
+            )  # REFERENCE:
+    # https://www.getdatajoy.com/examples/python-plots/pie-chart
 
     plt.title('Elton and Gruber Portfolio' + '\n')
     plt.axis('equal')
@@ -191,8 +218,8 @@ def eg_constructor(shares, mkt, rfr):
 
 
 def tb_constructor(shares, mkt, rfr):
-
-    tb = TreynorBlackPortfolio(shares, mkt, rfr).final
+    p = TreynorBlackPortfolio(shares, mkt, rfr)
+    tb = p.final
     tb_tab = [[key.name, value] for key, value in tb.items()]
 
     #  printing the table
@@ -204,10 +231,12 @@ def tb_constructor(shares, mkt, rfr):
                    numalign="right"))
     print()
 
-    #  plotting a pie chart
+    #  plotting a portfolio components pie chart
 
     plt.pie([item[1] for item in tb_tab],
             labels=[item[0] for item in tb_tab],
+            colors=['lightblue', 'green', 'cyan', 'yellowgreen', 'mediumpurple',
+                    'lightskyblue', 'lightcoral', 'yellow'],
             autopct='%1.2f%%',  # print the values inside the wedges
             )  # REFERENCE:
     # https://www.getdatajoy.com/examples/python-plots/pie-chart
@@ -221,132 +250,115 @@ def tb_constructor(shares, mkt, rfr):
         dpi=100)
     plt.close()
 
+    print()
 
+    #  plotting active/passive weights chart
 
+    plt.pie([p.active, 100 - p.active],
+            labels=['Passive', 'Active'],
+            colors=['lightblue', 'green', 'cyan', 'yellow'],
+            autopct='%1.2f%%',  # print the values inside the wedges
+            )  # REFERENCE:
+    # https://www.getdatajoy.com/examples/python-plots/pie-chart
+
+    plt.title('Weights of active and passive portfolios in TB' + '\n')
+    plt.axis('equal')
+    fig2 = plt.gcf()
+    plt.draw()
+    fig2.savefig(
+        'C:\\PycharmProjects\\PRM\\src\\.image_output\\active_passive.png',
+        dpi=100)
+    plt.close()
 
 
 
 def main():
+    try:
 
-    header()
+        run_prm = True
 
-    sharenotes()
-    strings = get_tickers()
+        while run_prm:
 
-    datenotes()
-    dates = get_period()
+            header()
 
-    risknotes()
-    rate = get_rfr()
+            sharenotes()
+            strings = get_tickers()
 
-    shares = share_maker(strings, dates)
-    market = market_maker(dates)
+            datenotes()
+            dates = get_period()
 
-    print()
-    print('*' * 80)
-    print('\n' * 2)
+            risknotes()
+            rate = get_rfr()
 
-    risk_indicators(shares, market, rate)
+            shares = share_maker(strings, dates)
+            market = market_maker(dates)
 
-    print()
-    print('*' * 80)
-    print('\n')
+            print()
+            print('\n' * 2)
+            print(Fore.YELLOW + '-' * 80)
+            print(Fore.BLUE + "Assessment for the period: " + '\033[30m')
+            print("FROM " + dates[0] + " TO " + dates[1])
+            print()
+            print(Fore.BLUE + "Your risk free rate : " + '\033[30m')
+            print(str(rate) + '%')
+            print(Fore.YELLOW + '-' * 80 + '\033[30m')
 
-    eg_constructor(shares, market, rate)
+            risk_indicators(shares, market, rate)
 
-    tb_constructor(shares, market, rate)
+            print()
+            print('\n')
 
-    print()
-    print(Fore.LIGHTCYAN_EX + "See portfolios' chart images in the output file"
-          + '\033[30m')
+            print(Fore.YELLOW + '-' * 80)
+            print(
+                Fore.BLUE + "Candidate shares for portfolio construction: " +
+                '\033[30m')
+            for i in strings:
+                print(i, end='  ')
+            print()
+            print()
+            print(Fore.BLUE + "Assessment for the period: " + '\033[30m')
+            print("FROM " + dates[0] + " TO " + dates[1])
+            print()
+            print(Fore.BLUE + "Your risk free rate : " + '\033[30m')
+            print(str(rate) + '%')
+            print(Fore.YELLOW + '-' * 80 + '\033[30m')
+            print()
 
+            eg_constructor(shares, market, rate)
 
-#main()
+            tb_constructor(shares, market, rate)
 
-d = ['2009-01-01', '2014-12-31']
+            print()
+            print(
+                Fore.YELLOW + "See portfolios' chart images in the output file"
+                + '\033[30m')
+            print()
 
-l = ['ERM', 'AML', 'CGL', 'NG', 'BP', 'RBS', 'TSCO']
+            answer = str(input("Would you like to analyse another batch of "
+                               "shares? (enter y to continue): "))
 
-myshares = share_maker(l, d)
+            if answer.lower() != "y":
+                run_prm = False
+                print()
+                print('*' * 22 + "MANY THANKS FOR USING PRM. GOOD BYE" + '*'*22)
 
-mkt = market_maker(d)
+            else:
+                print('\n' * 5)
 
-
-
-
-
-def tb_constructor(shares, mkt, rfr):
-
-    tb = TreynorBlackPortfolio(shares, mkt, rfr).final
-    tb_tab = [[key.name, value] for key, value in tb.items()]
-
-    #  printing the table
-    print(
-        Fore.BLUE + "Treynor-Black Active Investment Portfolio" +
-        '\033[30m')
-    print()
-    print(tabulate(tb_tab, headers=['Share', 'Weight %'], tablefmt='orgtbl',
-                   numalign="right"))
-    print()
-
-    #  plotting a pie chart
-
-    plt.pie([item[1] for item in tb_tab],
-            labels=[item[0] for item in tb_tab],
-            autopct='%1.2f%%',  # print the values inside the wedges
-            )  # REFERENCE:
-    # https://www.getdatajoy.com/examples/python-plots/pie-chart
-
-    plt.title('Treynor-Black Portfolio' + '\n')
-    plt.axis('equal')
-    fig1 = plt.gcf()
-    plt.draw()
-    fig1.savefig(
-        'C:\\PycharmProjects\\PRM\\src\\.image_output\\tb_portfolio.png',
-        dpi=100)
-    plt.close()
-
-
-
-
-
-
+    except Exception:
+        print("There was an unexpected error during execution.")
+        print("Please try to run the system again")
+        print()
+        text = """
+        The most likely reason being that one of the shares you entered was no
+        longer traded on LSE, which means that the system could not retrieve its
+        prices to compare them to all other shares in the assessment batch.
+        """
+        print(Fore.LIGHTMAGENTA_EX + text + '\033[30m')
 
 
+main()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # print()
-    # print(
-    #     Fore.BLUE + "Treynor-Black Investment Portfolio" +
-    #     '\033[30m')
-    # print()
-    # print(tabulate(tb_tab, headers = ['Share', 'Weight'], tablefmt='orgtbl',
-    #                numalign ="right"))
-
-
-
-
-eg_constructor(myshares, mkt, 1.5)
-tb_constructor(myshares, mkt, 1.5)
-
-
-
-
-
-#risk_indicators(myshares, mkt, 1.5)
 
 
 
