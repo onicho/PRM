@@ -98,7 +98,7 @@ def correlation(prices):
 
     Parameters
     ----------
-    :param prices: list containing arrays of prices or rates of return
+    :param prices: list containing arrays of prices of rates of return
     :type prices: list[list[float]]
     :return: the N-dimentional array with correlation coefficients for each pair
     :return type: array(array(float))
