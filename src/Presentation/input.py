@@ -82,16 +82,16 @@ def get_period():
     period = []
 
     print()
-    print("Enter start and end dates in the following format" + '\033[4m' +
-          " yyyy-mm-dd " + '\033[30m')
+    # print("Enter start and end dates in the following format" + '\033[4m' +
+    #       " yyyy-mm-dd " + '\033[30m')
 
     correct = False
 
     while not correct:
         print()
 
-        start = str(input(Fore.LIGHTGREEN_EX + "FROM:  " + '\033[30m')). \
-            replace(" ", "")
+        start = str(input(Fore.LIGHTGREEN_EX + "Enter a start date FROM:  " +
+                          '\033[30m')).replace(" ", "")
 
         if valid_date(start):
 
@@ -100,40 +100,51 @@ def get_period():
                 break
 
             else:
-                print("Invalid entry. Possible reasons: ")
-                print("The date appears to be after " +
+                print()
+                print('\033[31m' + "Invalid entry." + '\033[30m')
+                print("Possible reasons: ")
+                print("     *The date appears to be after " +
                       delta.strftime("%Y-%m-%d") +
                       " Enter an earlier date.")
 
         else:
-            print("Invalid entry. Please check the format of your date")
-            print("The date should be between 2009-01-01 and " +
+            print()
+            print('\033[31m' + "Invalid entry." + '\033[30m')
+            print("     *Please check the format of your date")
+            print("     *The date should be between 2009-01-01 and " +
                   delta.strftime("%Y-%m-%d"))
 
     while not correct:
         print()
-        end = str(input(Fore.LIGHTGREEN_EX + "TO:  " + '\033[30m')). \
-            replace(" ", "")
+        end = str(input(Fore.LIGHTGREEN_EX + "Enter the end date TO:  " +
+                        '\033[30m')).replace(" ", "")
 
-        d = datetime.strptime(period[0],"%Y-%m-%d").date()
+        d = datetime.strptime(period[0], "%Y-%m-%d").date()
 
         if valid_date(end):
 
-            if datetime.strptime(end, "%Y-%m-%d").date() >= d + days:
+            if d + days <= datetime.strptime(end, "%Y-%m-%d").date() < today:
 
                 period.append(end)
                 correct = True
 
             else:
-                print("The earliest end date can be " + (d + days).
+                print()
+                print('\033[31m' + "Invalid entry." + '\033[30m')
+                print("     *The earliest end date can be " + (d + days).
                       strftime("%Y-%m-%d"))
+                print("     *The latest end date can be " + str(today -
+                                                                timedelta(
+                                                                    days=1)))
 
-                print("The current version of the system works with monthly "
-                      "share prices")
+                print("     *The current version of the system works with "
+                      "monthly share prices")
 
         else:
-            print("Invalid entry. Please check the format of your date")
-            print("The date should be between " +
+            print()
+            print('\033[31m' + "Invalid entry." + '\033[30m')
+            print("     *Please check the format of your date")
+            print("     *The date should be between " +
                   (d + days).strftime("%Y-%m-%d") + " and " + str(date.today() -
                                                                   timedelta(1)))
 
@@ -178,7 +189,8 @@ def get_rfr():
         try:
             print()
             rfr = float(
-                (input(Fore.LIGHTGREEN_EX + "Risk Free Rate as percentage:  " +
+                (input(Fore.LIGHTGREEN_EX +
+                       "Enter Risk Free Rate as percentage:  " +
                        '\033[30m')).replace(" ", ""))
 
             if 0 < rfr < 100:
@@ -187,14 +199,16 @@ def get_rfr():
                 input_correct = True
 
             else:
+                print()
+                print('\033[31m' + "Invalid entry." + '\033[30m')
                 print(
-                    "The percentage value should be a number that is higher "
-                    "than 0% but less than 100%" )
-                print("Please try again")
+                    "     *The percentage value should be a number that is "
+                    "higher than 0% but less than 100%")
+                print("     *Please try again")
 
         except ValueError:
-
-            print("Please enter a valid number")
+            print()
+            print('\033[31m' + "Invalid entry." + '\033[30m')
+            print("     *Please enter a valid number")
 
     return risk
-
