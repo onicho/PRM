@@ -1,12 +1,14 @@
 """
 This module bla bla
 """
-
+from logic.portfolio import *
 from data.share import *
 from logic.calculator import *
 from presentation.input import *
 from tabulate import *
 import pandas
+import matplotlib.pyplot as plt
+
 
 def header():
     topline = '\n' + Fore.BLUE + '*' * 14 + \
@@ -156,9 +158,76 @@ def risk_indicators(stocks, mkt, rfr):
     print()
 
 
+def eg_constructor(shares, mkt, rfr):
+
+    eg = EltonGruberPortfolio(shares, mkt, rfr).final
+    eg_tab = [[key.name, value] for key, value in eg.items()]
+
+    #  printing the table
+    print(
+        Fore.BLUE + "Elton and Gruber Active Investment Portfolio" +
+        '\033[30m')
+    print()
+    print(tabulate(eg_tab, headers = ['Share', 'Weight %'], tablefmt='orgtbl',
+                   numalign ="right"))
+    print()
+
+    #  plotting a pie chart
+
+    plt.pie([item[1] for item in eg_tab],
+            labels=[item[0] for item in eg_tab],
+            autopct='%1.2f%%',  # print the values inside the wedges
+            )    #  REFERENCE:
+                 # https://www.getdatajoy.com/examples/python-plots/pie-chart
+
+    plt.title('Elton and Gruber Portfolio' + '\n')
+    plt.axis('equal')
+    fig1 = plt.gcf()
+    plt.draw()
+    fig1.savefig(
+        'C:\\PycharmProjects\\PRM\\src\\.image_output\\eg_portfolio.png',
+        dpi=100)
+    plt.close()
+
+
+def tb_constructor(shares, mkt, rfr):
+
+    tb = TreynorBlackPortfolio(shares, mkt, rfr).final
+    tb_tab = [[key.name, value] for key, value in tb.items()]
+
+    #  printing the table
+    print(
+        Fore.BLUE + "Treynor-Black Active Investment Portfolio" +
+        '\033[30m')
+    print()
+    print(tabulate(tb_tab, headers=['Share', 'Weight %'], tablefmt='orgtbl',
+                   numalign="right"))
+    print()
+
+    #  plotting a pie chart
+
+    plt.pie([item[1] for item in tb_tab],
+            labels=[item[0] for item in tb_tab],
+            autopct='%1.2f%%',  # print the values inside the wedges
+            )  # REFERENCE:
+    # https://www.getdatajoy.com/examples/python-plots/pie-chart
+
+    plt.title('Treynor-Black Portfolio' + '\n')
+    plt.axis('equal')
+    fig1 = plt.gcf()
+    plt.draw()
+    fig1.savefig(
+        'C:\\PycharmProjects\\PRM\\src\\.image_output\\tb_portfolio.png',
+        dpi=100)
+    plt.close()
+
+
+
+
 
 
 def main():
+
     header()
 
     sharenotes()
@@ -175,26 +244,103 @@ def main():
 
     print()
     print('*' * 80)
-    print('\n' * 3)
+    print('\n' * 2)
 
     risk_indicators(shares, market, rate)
 
+    print()
+    print('*' * 80)
+    print('\n')
+
+    eg_constructor(shares, market, rate)
+
+    tb_constructor(shares, market, rate)
+
+    print()
+    print(Fore.LIGHTCYAN_EX + "See portfolios' chart images in the output file"
+          + '\033[30m')
 
 
-main()
+#main()
 
-# d = ['2009-01-01', '2014-12-31']
-#
-# l = ['ERM', 'AML', 'CGL', 'NG', '^FTSE']
-#
-# myshares = share_maker(l,d)
-# mkt = market_maker(d)
+d = ['2009-01-01', '2014-12-31']
 
+l = ['ERM', 'AML', 'CGL', 'NG', 'BP', 'RBS', 'TSCO']
 
+myshares = share_maker(l, d)
 
+mkt = market_maker(d)
 
 
 
+
+
+def tb_constructor(shares, mkt, rfr):
+
+    tb = TreynorBlackPortfolio(shares, mkt, rfr).final
+    tb_tab = [[key.name, value] for key, value in tb.items()]
+
+    #  printing the table
+    print(
+        Fore.BLUE + "Treynor-Black Active Investment Portfolio" +
+        '\033[30m')
+    print()
+    print(tabulate(tb_tab, headers=['Share', 'Weight %'], tablefmt='orgtbl',
+                   numalign="right"))
+    print()
+
+    #  plotting a pie chart
+
+    plt.pie([item[1] for item in tb_tab],
+            labels=[item[0] for item in tb_tab],
+            autopct='%1.2f%%',  # print the values inside the wedges
+            )  # REFERENCE:
+    # https://www.getdatajoy.com/examples/python-plots/pie-chart
+
+    plt.title('Treynor-Black Portfolio' + '\n')
+    plt.axis('equal')
+    fig1 = plt.gcf()
+    plt.draw()
+    fig1.savefig(
+        'C:\\PycharmProjects\\PRM\\src\\.image_output\\tb_portfolio.png',
+        dpi=100)
+    plt.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # print()
+    # print(
+    #     Fore.BLUE + "Treynor-Black Investment Portfolio" +
+    #     '\033[30m')
+    # print()
+    # print(tabulate(tb_tab, headers = ['Share', 'Weight'], tablefmt='orgtbl',
+    #                numalign ="right"))
+
+
+
+
+eg_constructor(myshares, mkt, 1.5)
+tb_constructor(myshares, mkt, 1.5)
 
 
 
