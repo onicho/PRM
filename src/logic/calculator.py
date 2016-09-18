@@ -3,7 +3,6 @@ assessments for Share objects by using Shares' historical prices values
 """
 
 import statistics
-
 import numpy as np
 
 
