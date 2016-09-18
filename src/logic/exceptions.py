@@ -1,4 +1,6 @@
-# Reference: https://docs.python.org/3/tutorial/errors.html
+#REFERENCE
+# the execution of the Error classes was adopted from a python tutorial
+# which can be accessed here https://docs.python.org/3/tutorial/errors.html
 
 
 class Error(Exception):
