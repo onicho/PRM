@@ -82,8 +82,6 @@ def get_period():
     period = []
 
     print()
-    # print("Enter start and end dates in the following format" + '\033[4m' +
-    #       " yyyy-mm-dd " + '\033[30m')
 
     correct = False
 
@@ -212,3 +210,6 @@ def get_rfr():
             print("     *Please enter a valid number")
 
     return risk
+
+
+

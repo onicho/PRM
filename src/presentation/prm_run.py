@@ -56,11 +56,13 @@ def risknotes():
 
 
 def share_maker(strings, dates):
+
     shares = [ShareFactory.create(s, dates[0], dates[1]) for s in strings]
     return shares
 
 
 def market_maker(dates):
+
     market = ShareFactory.create('^FTSE', dates[0], dates[1])
     return market
 
@@ -199,13 +201,17 @@ def eg_constructor(shares, mkt, rfr):
 
     #  plotting a pie chart
 
+    # REFERENCE:
+    # guidance on how to build a chart was taken from the link source below
+    # https://www.getdatajoy.com/examples/python-plots/pie-chart
+
     plt.pie([item[1] for item in eg_tab],
             labels=[item[0] for item in eg_tab],
             colors=['lightblue', 'green', 'cyan', 'yellowgreen', 'mediumpurple',
                     'lightskyblue', 'lightcoral', 'yellow'],
             autopct='%1.2f%%',  # print the values inside the wedges
-            )  # REFERENCE:
-    # https://www.getdatajoy.com/examples/python-plots/pie-chart
+            )
+
 
     plt.title('Elton and Gruber Portfolio' + '\n')
     plt.axis('equal')
@@ -237,8 +243,11 @@ def tb_constructor(shares, mkt, rfr):
             labels=[item[0] for item in tb_tab],
             colors=['lightblue', 'green', 'cyan', 'yellowgreen', 'mediumpurple',
                     'lightskyblue', 'lightcoral', 'yellow'],
-            autopct='%1.2f%%',  # print the values inside the wedges
-            )  # REFERENCE:
+            autopct='%1.2f%%',
+            )
+
+    # REFERENCE:
+    # guidance on how to build a chart was taken from the link source below
     # https://www.getdatajoy.com/examples/python-plots/pie-chart
 
     plt.title('Treynor-Black Portfolio' + '\n')
@@ -258,7 +267,10 @@ def tb_constructor(shares, mkt, rfr):
             labels=['Passive', 'Active'],
             colors=['lightblue', 'green', 'cyan', 'yellow'],
             autopct='%1.2f%%',  # print the values inside the wedges
-            )  # REFERENCE:
+            )
+
+    # REFERENCE:
+    # guidance on how to build a chart was taken from the link source below
     # https://www.getdatajoy.com/examples/python-plots/pie-chart
 
     plt.title('Weights of active and passive portfolios in TB' + '\n')
@@ -269,7 +281,6 @@ def tb_constructor(shares, mkt, rfr):
         'C:\\PycharmProjects\\PRM\\src\\.image_output\\active_passive.png',
         dpi=100)
     plt.close()
-
 
 
 def main():
